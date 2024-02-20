@@ -4,6 +4,7 @@ import SignUp from './Component/SignUp/SignUp';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import NavBar from './Component/Home/NavBar';
+import Login from './Component/Login/Login';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           ) : (
             <>
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/*" element={<NotFound />} />
             </>
           )}
