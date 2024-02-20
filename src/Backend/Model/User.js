@@ -23,7 +23,7 @@ const User = new mongoose.Schema({
 });
 
 // Pre-save hook to set CodeCrafter as admin
-UserSchema.pre('save', function(next) {
+User.pre('save', function(next) {
     if (this.userName === "CodeCrafter") {
         this.isAdmin = true;
     }

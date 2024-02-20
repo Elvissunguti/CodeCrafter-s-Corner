@@ -7,6 +7,7 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const User = require("./src/Backend/Model/User");
+const AuthRoutes = require("./src/Backend/Routes/Auth");
 
 const app = express();
 const server = http.createServer(app);
@@ -58,6 +59,8 @@ passport.deserializeUser((id, done) => {
   });
 });
 
+
+app.use("/auth", AuthRoutes);
 
 
 server.listen(PORT, () => {
