@@ -1,22 +1,16 @@
 const multer = require("multer");
 const path = require("path");
 
-// Configure multer storage for images
-const imageStorage = multer.diskStorage({
+// Configure multer storage for both images and videos
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "../../../public/Images"));
-    },
-    filename: (req, file, cb) => {
-        const uniquePrefix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        const extension = path.extname(file.originalname);
-        cb(null, uniquePrefix + extension);
-    }
-});
-
-// Configure multer storage for videos
-const videoStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "../../../public/Videos"));
+        let destinationPath;
+        if (file.fieldname === "images") {
+            destinationPath = path.join(__dirname, "../../../public/Images");
+        } else if (file.fieldname === "videos") {
+            destinationPath = path.join(__dirname, "../../../public/Videos");
+        }
+        cb(null, destinationPath);
     },
     filename: (req, file, cb) => {
         const uniquePrefix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -27,7 +21,7 @@ const videoStorage = multer.diskStorage({
 
 // Combine multer storage configurations for both images and videos
 const blogUploads = multer({
-    storage: multer.diskStorage({}),
+    storage: storage,
     fileFilter: (req, file, cb) => {
         // Validate file types here if needed
         cb(null, true);

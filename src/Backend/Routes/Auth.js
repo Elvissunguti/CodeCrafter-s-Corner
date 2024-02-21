@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
             if(passwordChecker){
                 // generate a Jwt token for authentification
                 const token =await getToken(user.email, user)
-                return res.json({ message: "User logged in successfully" });
+                return res.json({ message: "User logged in successfully", token });
             } else{
                 return res.json({ message: "user password does not match"});
             }
