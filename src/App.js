@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import NavBar from './Component/Home/NavBar';
 import Login from './Component/Login/Login';
+import Blog from './Component/Blog/Blog';
 
 function App() {
 
@@ -30,6 +31,8 @@ function App() {
             <>
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/Blog" element={<Blog />} />
+            <Route path="/navbar" element={<NavBar />} />
             <Route path="/*" element={<NotFound />} />
             </>
           )}

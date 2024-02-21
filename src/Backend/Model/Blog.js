@@ -16,9 +16,22 @@ const Blog = new mongoose.Schema({
         ref: "User",
 
     },
-    isPublic:{
+    isPublicIntended: {
         type: Boolean,
         default: false,
+    },
+    isPublic: {
+        type: Boolean,
+        default: false,
+    },
+    approvalStatus: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending',
+    },
+    rejectionReason: {
+        type: String,
+        default: "",
     }
 
 });

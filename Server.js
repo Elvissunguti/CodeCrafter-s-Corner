@@ -9,6 +9,7 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 const User = require("./src/Backend/Model/User");
 const AuthRoutes = require("./src/Backend/Routes/Auth");
 const BlogRoutes = require("./src/Backend/Routes/Blog");
+const AdminRoutes = require("./src/Backend/Routes/Admin");
 
 const app = express();
 const server = http.createServer(app);
@@ -63,6 +64,7 @@ passport.deserializeUser((id, done) => {
 
 app.use("/auth", AuthRoutes);
 app.use("/blog", BlogRoutes);
+app.use("/admin", AdminRoutes);
 
 server.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
