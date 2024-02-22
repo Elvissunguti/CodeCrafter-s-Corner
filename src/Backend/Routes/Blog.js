@@ -3,6 +3,7 @@ const passport = require("passport");
 const router = express.Router();
 const Blog = require("../Model/Blog");
 const { blogUploads } = require("../Middleware/Blog");
+const User = require("../Model/User");
 
 
 // router to create a blog 
@@ -57,7 +58,20 @@ async (req, res) => {
 
         const approvedPublicBlogs = await Blog.find({ approvalStatus: 'approved', isPublic: true });
 
-        return res.json({ data: approvedPublicBlogs});
+        const formattedBlogs =  await Promise.all(approvedPublicBlogs.map(async (blog) => {
+            const author = await User.findById(blog.author);
+
+            return {
+                id: blog._id,
+                title: blog.title,
+                content: blog.content,
+                userName: author ? author.userName : "Unknown",
+                images: blog.images,
+                videos: blog.videos,
+            };
+        }));
+
+        return res.json({ data: formattedBlogs });
 
 
     } catch (error){

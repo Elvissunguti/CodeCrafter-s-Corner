@@ -51,6 +51,16 @@ export const makeAuthenticatedMulterPostRequest = async (route, formData) => {
     }
 };
 
+export const makeUnauthenticatedGETRequest = async (route) => {
+    const response = await fetch(backendUrl + route, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    const formattedResponse = await response.json();
+    return formattedResponse;
+};
 
 export const makeAuthenticatedGETRequest = async (route) => {
     const token = getToken();
