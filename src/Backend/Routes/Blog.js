@@ -50,7 +50,21 @@ async (req, res) => {
     })
 });
 
+// router to fetch public blogs
+router.get("/publicblog",
+async (req, res) => {
+    try{
 
+        const approvedPublicBlogs = await Blog.find({ approvalStatus: 'approved', isPublic: true });
+
+        return res.json({ data: approvedPublicBlogs});
+
+
+    } catch (error){
+        console.error("Error fetching public blogs", error);
+        return res.json({ Error: "Error fetching public blogs" });
+    }
+});
 
 module.exports = router;
 
