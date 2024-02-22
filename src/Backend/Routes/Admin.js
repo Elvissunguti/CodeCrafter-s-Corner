@@ -16,7 +16,7 @@ async (req, res) => {
 
     } catch (error){
         console.error("Error fetching blogs that are waiting approval", error);
-        res.json({ message: "Error fetching blogs that are waiting for approval"})
+        return res.json({ message: "Error fetching blogs that are waiting for approval"})
     }
 });
 
@@ -58,12 +58,44 @@ async (req, res) => {
 
 
     } catch (error){
-        console.error("Error  making decision on blog approval", error);
-        res.json({ Message: "Error  making decision on blog approval"});
+        console.error("Error  making decision on blog approval:", error);
+       return res.json({ Message: "Error  making decision on blog approval"});
     }
 });
 
+// router to make a user an admin
+router.post("/create",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        console.log("Authenticated user:", req.user);
+
+                    // Check if the authenticated user making the request is CodeCrafter
+                    if (req.user && req.user.userName !== "CodeCrafter") {
+                        return res.status(403).json({ message: "Only CodeCrafter can create new admins" });
+                    }
+
+        const { targetUserName } = req.body;
+
+        const userToAdmin = await User.findOne({ userName: targetUserName });
+
+                    // Check if the user exists
+                    if (!userToAdmin) {
+                        return res.status(404).json({ message: "User not found" });
+                    }
 
 
+        userToAdmin.isAdmin = true;
+
+        await userToAdmin.save(req.user);
+
+        return res.json({ message: `${targetUserName} is now an admin` });
+
+    } catch(error){
+        console.error("Error making a user an admin:", error);
+        return res.json({ Error: "Error making a user an admin"})
+    }
+});
 
 module.exports = router;
