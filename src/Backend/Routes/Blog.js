@@ -80,6 +80,25 @@ async (req, res) => {
     }
 });
 
+
+// router to fetch a particular blog
+router.get("/fetch/:blogId",
+async (req, res) => {
+    try{
+
+        const blogId = req.params.blogId;
+
+        const blog = await Blog.findById(blogId, 'title content _id images videos');
+
+
+        return res.json({ data: blog });
+
+    } catch(error){
+        console.error("Error fetching a particular blog:", error);
+        return res.json({ Error: "Error fetching a particular blog" });
+    }
+});
+
 module.exports = router;
 
 

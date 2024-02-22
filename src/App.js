@@ -23,6 +23,8 @@ function App() {
       <Router>
         <Routes>
 
+        <Route path="/Blog" element={<Blog />} />
+
           {loggedIn ? (
             <>
             
@@ -31,7 +33,6 @@ function App() {
             <>
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/Blog" element={<Blog />} />
             <Route path="/navbar" element={<NavBar />} />
             <Route path="/*" element={<NotFound />} />
             </>
