@@ -11,6 +11,7 @@ const AuthRoutes = require("./src/Backend/Routes/Auth");
 const BlogRoutes = require("./src/Backend/Routes/Blog");
 const AdminRoutes = require("./src/Backend/Routes/Admin");
 const bodyParser = require("body-parser");
+const CommentRoutes = require("./src/Backend/Routes/Comments");
 
 
 const app = express();
@@ -69,6 +70,7 @@ passport.deserializeUser((id, done) => {
 app.use("/auth", AuthRoutes);
 app.use("/blog", BlogRoutes);
 app.use("/admin", AdminRoutes);
+app.use("/comment", CommentRoutes);
 
 server.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
