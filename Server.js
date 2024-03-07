@@ -10,6 +10,8 @@ const User = require("./src/Backend/Model/User");
 const AuthRoutes = require("./src/Backend/Routes/Auth");
 const BlogRoutes = require("./src/Backend/Routes/Blog");
 const AdminRoutes = require("./src/Backend/Routes/Admin");
+const bodyParser = require("body-parser");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -29,6 +31,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Setup passport-jwt
 const opts = {};

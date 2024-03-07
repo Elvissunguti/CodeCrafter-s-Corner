@@ -45,11 +45,16 @@ export const makeAuthenticatedMulterPostRequest = async (route, formData) => {
         return formattedResponse;
     } catch (error) {
         console.error("Request error:", error);
-        const responseText = await error.text(); // Capture the error response text
-        console.log("Response text:", responseText); // Log the error response
+        if (error instanceof TypeError) {
+            console.log("Response does not contain a body to extract");
+        } else {
+            const responseText = await error.text(); // Capture the error response text
+            console.log("Response text:", responseText); // Log the error response
+        }
         return { error: "Request failed" };
     }
 };
+
 
 export const makeUnauthenticatedGETRequest = async (route) => {
     const response = await fetch(backendUrl + route, {

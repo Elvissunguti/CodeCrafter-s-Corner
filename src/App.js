@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import NavBar from './Component/Home/NavBar';
 import Login from './Component/Login/Login';
 import Blog from './Component/Blog/Blog';
+import UploadBlog from './Component/Blog/UploadBlog';
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
 
           {loggedIn ? (
             <>
-            
+            <Route path="/blog/upload" element={<UploadBlog />} />
             </>
           ) : (
             <>
