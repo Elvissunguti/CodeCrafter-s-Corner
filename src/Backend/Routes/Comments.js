@@ -65,4 +65,31 @@ async (req, res) => {
 });
 
 
+// router to comment under a comment
+router.post("/parentcomment/:parentCommentId",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const userId = req.user._id;
+        const parentCommentId = req.params.parentCommentId;
+        const commentText = req.body.commentText;
+
+        const newComment = new Comment({
+            userId,
+            parentCommentId,
+            commentText,
+        });
+
+        await newComment.save();
+
+        res.json({ message: "Comment created successfully" });
+
+
+    } catch(error){
+        console.error("Error posting a comment under a comment:", error);
+        return res.json({ error: "Error posting a comment  under a comment." });
+    }
+});
+
 module.exports = router;
