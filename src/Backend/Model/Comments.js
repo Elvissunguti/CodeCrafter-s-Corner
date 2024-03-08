@@ -25,6 +25,12 @@ const CommentSchema = new mongoose.Schema({
 });
 
 
+CommentSchema.pre("save", function(next) {
+    this.updatedAt = new Date();
+    next();
+});
+
+
 const Comment = mongoose.model("Comment",  CommentSchema);
 
 module.exports = Comment;
