@@ -25,6 +25,11 @@ const BlogSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    thumbnail: {
+        type: String,
+        default: null,
+        required: true
+    },
     paragraph: {
         type: [ParagraphSchema], 
         required: true

@@ -1,16 +1,17 @@
+
 const multer = require("multer");
 const path = require("path");
 
-// Configure multer storage for media files
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Determine destination folder based on file type (image or video)
         const fileType = file.mimetype.split("/")[0];
         let destinationPath = "";
         if (fileType === "image") {
             destinationPath = path.join(__dirname, "../../../public/Images");
         } else if (fileType === "video") {
             destinationPath = path.join(__dirname, "../../../public/Videos");
+        } else if (file.fieldname === "thumbnail") {
+            destinationPath = path.join(__dirname, "../../../public/Thumbnails");
         }
         cb(null, destinationPath);
     },
@@ -21,13 +22,11 @@ const storage = multer.diskStorage({
     }
 });
 
-// multer middleware to handle media uploads
-const blogUploads = multer({
+const multerConfig = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        // Validate file types here if needed
         cb(null, true);
     }
-}).array('media');  
+});
 
-module.exports = { blogUploads };
+module.exports = multerConfig;

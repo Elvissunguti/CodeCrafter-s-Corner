@@ -2,9 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const Blog = require("../Model/Blog");
-const { blogUploads } = require("../Middleware/Blog");
+const multerConfig = require("../Middleware/Blog");
 const User = require("../Model/User");
-const fs = require("fs");
+
+
 
 
 const getMediaType = (filename) => {
@@ -25,29 +26,22 @@ const getMediaType = (filename) => {
 
 // router to create a blog 
 router.post("/create",
-passport.authenticate("jwt", {session: false}),
-async (req, res) => {
-    blogUploads(req, res, async (err) => {
-        if(err){
-            console.error("Error uploading files:", err);
-            return res.json({ err: "Failed to upload files" });
-        }
-        try{
-
+    passport.authenticate("jwt", { session: false }),
+    multerConfig.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'media' }]),
+    async (req, res) => {
+        try {
             const { title } = req.body;
-            const author = req.user._id; 
+            const author = req.user._id;
+            const thumbnail = req.files['thumbnail'] ? req.files['thumbnail'][0].filename : null;
+            const mediaFiles = req.files['media'].map(file => file.filename);
 
-            // Create an array to store the content paragraphs
-            const paragraphs = req.body.content.map(JSON.parse); // Parse the content JSON string
+            const paragraphs = req.body.content.map(JSON.parse);
 
-            // Create an array to store media filenames
-            const mediaFiles = req.files.map(file => file.filename);
-
-            // Create a new blog instance
             const newBlog = new Blog({
                 title,
+                thumbnail,
                 paragraph: paragraphs.map((paragraph, index) => {
-                    const mediaType = getMediaType(req.files[index]?.filename); // Determine media type based on filename
+                    const mediaType = getMediaType(req.files['media'][index]?.filename);
                     return {
                         content: paragraph.content,
                         media: {
@@ -58,18 +52,16 @@ async (req, res) => {
                 }),
                 author
             });
-      
-                
-                await newBlog.save();
-        
-            return res.json({ Message: "Blog created successfully"});
-        
-        } catch(error){
+
+            await newBlog.save();
+
+            return res.json({ Message: "Blog created successfully" });
+        } catch (error) {
             console.error("Error creating blog:", error);
-            return res.json({ error: "Error creating blog" });
+            return res.status(500).json({ error: "Error creating blog" });
         }
-    })
-});
+    });
+
 
 // router to fetch public blogs
 router.get("/publicblog",
@@ -81,13 +73,21 @@ async (req, res) => {
         const formattedBlogs =  await Promise.all(approvedPublicBlogs.map(async (blog) => {
             const author = await User.findById(blog.author);
 
+            const paragraphs = blog.paragraph.map((paragraph) => {
+                return {
+                    content: paragraph.content,
+                    media: {
+                        images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                        videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+                    }
+                };
+            });
+
             return {
                 id: blog._id,
                 title: blog.title,
-                content: blog.content,
+                paragraphs: paragraphs,
                 userName: author ? author.userName : "Unknown",
-                images: blog.images,
-                videos: blog.videos,
             };
         }));
 

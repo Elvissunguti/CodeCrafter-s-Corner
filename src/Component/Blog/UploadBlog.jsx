@@ -4,6 +4,7 @@ import { makeAuthenticatedMulterPostRequest } from "../Utils/Helpers";
 
 const UploadBlog = () => {
     const [title, setTitle] = useState("");
+    const [thumbnail, setThumbnail] = useState(null);
     const [paragraphs, setParagraphs] = useState([{ content: "", media: null }]);
 
     const handleSubmit = async (e) => {
@@ -11,9 +12,10 @@ const UploadBlog = () => {
         try {
             const formData = new FormData();
             formData.append("title", title);
+            formData.append("thumbnail", thumbnail);
 
             paragraphs.forEach((paragraph, index) => {
-                formData.append("content", JSON.stringify(paragraph)); // Send each paragraph object as JSON string
+                formData.append("content", JSON.stringify(paragraph));
                 if (paragraph.media) {
                     formData.append("media", paragraph.media);
                 }
@@ -29,14 +31,18 @@ const UploadBlog = () => {
                 // Handle error message from backend
             } else {
                 console.log("Blog created successfully:", response.message);
-                // Handle successful response from backend
                 setTitle("");
+                setThumbnail(null);
                 setParagraphs([{ content: "", media: null }]);
             }
 
         } catch (error) {
             console.error("Error creating blog:", error);
         }
+    };
+
+    const handleThumbnailChange = (e) => {
+        setThumbnail(e.target.files[0]);
     };
 
     const handleParagraphChange = (index, value) => {
@@ -48,7 +54,7 @@ const UploadBlog = () => {
     const handleMediaChange = (index, media) => {
         console.log("Selected media file:", media);
         const newParagraphs = [...paragraphs];
-        newParagraphs[index].media = media[0]; // Assuming only one media file per paragraph
+        newParagraphs[index].media = media[0];
         setParagraphs(newParagraphs);
     };
 
@@ -76,6 +82,15 @@ const UploadBlog = () => {
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label>Thumbnail:</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleThumbnailChange}
                             required
                         />
                     </div>
