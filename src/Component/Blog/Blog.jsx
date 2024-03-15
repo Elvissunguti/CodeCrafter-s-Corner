@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../Home/NavBar";
 import { makeUnauthenticatedGETRequest } from "../Utils/Helpers";
+import { Link } from "react-router-dom";
 
 const Blog = () => {
     const [blogPosts, setBlogPosts] = useState([]);
@@ -52,7 +53,7 @@ const Blog = () => {
                             <p className="text-gray-700">{truncateContent(blog.paragraphs[0].content, 50)}</p>
                             <div className="mt-2 flex items-center justify-between">
                                 <span className="text-sm text-gray-600">{blog.userName}</span>
-                                <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Read More</button>
+                                <Link to={`/blog/${blog.blogId}`} className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Read More</Link>
                             </div>
                         </div>
                     </div>

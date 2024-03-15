@@ -84,7 +84,7 @@ async (req, res) => {
             });
 
             return {
-                id: blog._id,
+                blogId: blog._id,
                 title: blog.title,
                 thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
                 paragraphs: paragraphs,
@@ -109,19 +109,32 @@ async (req, res) => {
 
         const blogId = req.params.blogId;
 
-        const blog = await Blog.findById(blogId, 'title author content _id images videos');
+        const blog = await Blog.findById(blogId);
 
-        const user = await User.findById(blog.author, 'userName');
+        if (!blog) {
+            return res.status(404).json({ error: "Blog not found" });
+        }
+
+        const author = await User.findById(blog.author, 'userName');
+
+        const formattedParagraphs = blog.paragraph.map((paragraph) => ({
+            content: paragraph.content,
+            media: {
+                images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+            }
+        }));
 
         
-        // Adding userName to the blog object
-        const blogWithUserName = {
-            ...blog.toObject(),
-            userName: user.userName
+        const formattedBlog = {
+            blogId: blog._id,
+            title: blog.title,
+            thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
+            paragraphs: formattedParagraphs,
+            userName: author ? author.userName : "Unknown",
         };
 
-
-        return res.json({ data: blogWithUserName });
+        return res.json({ data: formattedBlog });
 
     } catch(error){
         console.error("Error fetching a particular blog:", error);

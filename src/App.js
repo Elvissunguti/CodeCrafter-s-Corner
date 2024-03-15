@@ -7,6 +7,7 @@ import NavBar from './Component/Home/NavBar';
 import Login from './Component/Login/Login';
 import Blog from './Component/Blog/Blog';
 import UploadBlog from './Component/Blog/UploadBlog';
+import BlogPage from './Component/Shared/BlogPage';
 
 function App() {
 
@@ -25,11 +26,12 @@ function App() {
         <Routes>
 
         <Route path="/Blog" element={<Blog />} />
+        <Route path="blog/:blogId" element={<BlogPage />} />
 
           {loggedIn ? (
             <>
             <Route path="/blog/upload" element={<UploadBlog />} />
-            
+
             </>
           ) : (
             <>
