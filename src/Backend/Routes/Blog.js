@@ -86,6 +86,7 @@ async (req, res) => {
             return {
                 id: blog._id,
                 title: blog.title,
+                thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
                 paragraphs: paragraphs,
                 userName: author ? author.userName : "Unknown",
             };
