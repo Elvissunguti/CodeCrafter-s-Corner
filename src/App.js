@@ -26,11 +26,11 @@ function App() {
         <Routes>
 
         <Route path="/Blog" element={<Blog />} />
-        <Route path="blog/:blogId" element={<BlogPage />} />
+        <Route path="blog/:blogId" element={<BlogPage  loggedIn={loggedIn} />} />
 
           {loggedIn ? (
             <>
-            <Route path="/blog/upload" element={<UploadBlog loggedIn={loggedIn} />} />
+            <Route path="/blog/upload" element={<UploadBlog  />} />
 
             </>
           ) : (

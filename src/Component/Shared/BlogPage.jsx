@@ -9,7 +9,7 @@ const BlogPage = ({ loggedIn }) => {
     const [ blog, setBlog ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     const [ error, setError ] = useState(null);
-    const [ comments, setComment ] = useState("");
+    const [ commentText, setCommentText ] = useState("");
     const [ fetchComments, setFetchComments ] = useState([]);
     const navigate = useNavigate();
     
@@ -29,7 +29,23 @@ const BlogPage = ({ loggedIn }) => {
             }
             
         }
-        fetchBlog()
+        fetchBlog();
+    }, [blogId]);
+
+    useEffect(() => {
+        const fetchComment = async () => {
+            try{
+                const response = await makeUnauthenticatedGETRequest(
+                    `/comment/fetch/${blogId}`
+                );
+
+                setFetchComments(response.data);
+
+            } catch(error){
+                console.error("Error fetching comments in a blog", error);
+            }
+        }
+        fetchComment();
     }, [blogId]);
 
 
@@ -42,7 +58,7 @@ const BlogPage = ({ loggedIn }) => {
             }
 
             await makeAuthenticatedPOSTRequest(
-                `/comment/create/${blogId}`, { comments }
+                `/comment/create/${blogId}`, { commentText }
             )
 
         } catch (error){
@@ -51,7 +67,7 @@ const BlogPage = ({ loggedIn }) => {
     };
 
     const handleCommentChange = (event) => {
-        setComment(event.target.value);
+        setCommentText(event.target.value);
     };
 
     const processImageUrl = (image) => {
@@ -107,7 +123,7 @@ const BlogPage = ({ loggedIn }) => {
                             <h2 className="text-xl font-semibold mb-4">Comments</h2>
                             <form onSubmit={handleSubmitComment}>
                                 <textarea
-                                    value={comments}
+                                    value={commentText}
                                     onChange={handleCommentChange}
                                     className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                                     placeholder="Write your comment here..."

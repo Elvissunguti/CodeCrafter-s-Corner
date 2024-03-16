@@ -12,7 +12,7 @@ async (req, res) => {
     try{
 
         const userId = req.user._id;
-        const blogId = req.params.postId;
+        const blogId = req.params.blogId;
 
         const commentText = req.body.commentText;
 
@@ -43,7 +43,7 @@ async (req, res) => {
 
         const updatedCommentText = req.body.updatedCommentText;
 
-        const comment = await Comment.findById(commentId);
+        const comment = await Comment.findById(commentId)
 
         if (!comment) {
             return res.json({ Error: "Comment not found" });
@@ -89,6 +89,22 @@ async (req, res) => {
     } catch(error){
         console.error("Error posting a comment under a comment:", error);
         return res.json({ error: "Error posting a comment  under a comment." });
+    }
+});
+
+router.get("/fetch/:blogId",
+async (req, res) => {
+    try{
+
+        const blogId = req.params.blogId;
+
+        const comments = await Comment.find({ blogId }).populate("userId", "userName")
+
+        return res.json({ data: comments})
+
+    } catch (error){
+        console.error("Error fetching comments of a blog:", error);
+        return res.json({ error: "Error fetching comments of a blog" });
     }
 });
 
