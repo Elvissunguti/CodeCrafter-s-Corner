@@ -8,16 +8,34 @@ import Login from './Component/Login/Login';
 import Blog from './Component/Blog/Blog';
 import UploadBlog from './Component/Blog/UploadBlog';
 import BlogPage from './Component/Shared/BlogPage';
+import { makeAuthenticatedGETRequest } from './Component/Utils/Helpers';
 
 function App() {
 
   const [ loggedIn, setLoggedIn ] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
     // Check if the token exists in cookies to determine if the user is logged in
     const token = Cookies.get('token');
     setLoggedIn(!!token);
+    fetchUserId();
   }, []);
+
+  const fetchUserId = async () => {
+    try {
+      const response = await makeAuthenticatedGETRequest("/auth/userId");
+      setCurrentUserId(response.data);
+    } catch (error) {
+      console.error("Error fetching user ID:", error);
+    }
+  };
+
+
+  const handleLogin = () => {
+    setLoggedIn(true);
+    fetchUserId();
+  };
 
 
   return (
@@ -26,7 +44,7 @@ function App() {
         <Routes>
 
         <Route path="/Blog" element={<Blog />} />
-        <Route path="blog/:blogId" element={<BlogPage  loggedIn={loggedIn} />} />
+        <Route path="blog/:blogId" element={<BlogPage  loggedIn={loggedIn} currentUserId={currentUserId} />} />
 
           {loggedIn ? (
             <>
@@ -36,7 +54,7 @@ function App() {
           ) : (
             <>
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/navbar" element={<NavBar />} />
             <Route path="/*" element={<NotFound />} />
             </>
