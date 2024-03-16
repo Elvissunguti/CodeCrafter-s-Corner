@@ -30,7 +30,7 @@ function App() {
 
           {loggedIn ? (
             <>
-            <Route path="/blog/upload" element={<UploadBlog />} />
+            <Route path="/blog/upload" element={<UploadBlog loggedIn={loggedIn} />} />
 
             </>
           ) : (
