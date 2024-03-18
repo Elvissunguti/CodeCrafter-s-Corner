@@ -66,22 +66,32 @@ async (req, res) => {
 
 
 // router to comment under a comment
-router.post("/parentcomment/:parentCommentId",
+router.post("/parentcomment/:blogId/:parentCommentId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
 
         const userId = req.user._id;
+        const blogId = req.params.blogId;
         const parentCommentId = req.params.parentCommentId;
         const commentText = req.body.commentText;
 
         const newComment = new Comment({
             userId,
+            blogId,
             parentCommentId,
             commentText,
         });
 
         await newComment.save();
+
+        if (parentCommentId) {
+            const parentComment = await Comment.findById(parentCommentId);
+            if (parentComment) {
+                parentComment.replies.push(newComment._id);
+                await parentComment.save();
+            }
+        }
 
         res.json({ message: "Comment created successfully" });
 
@@ -94,18 +104,34 @@ async (req, res) => {
 
 router.get("/fetch/:blogId",
 async (req, res) => {
-    try{
-
+    try {
         const blogId = req.params.blogId;
 
-        const comments = await Comment.find({ blogId }).populate("userId", "userName")
+        // Find all top-level comments (comments without parentCommentId)
+        const topLevelComments = await Comment.find({ blogId, parentCommentId: null })
+            .populate({
+                path: 'replies', // Populate replies recursively
+                populate: {
+                    path: 'replies',
+                    populate: {
+                        path: 'replies', // Continue populating replies recursively
+                        // Add more levels if needed
+                    }
+                },
+                populate: {
+                    path: 'userId', // Populate the userId field to get the user details
+                    select: 'userName' // Select only the userName field
+                }
+            })
+            .populate("userId", "userName")
+            .sort({ createdAt: 'asc' }); // Sort comments by creation time in ascending order
 
-        return res.json({ data: comments})
-
-    } catch (error){
+        return res.json({ data: topLevelComments });
+    } catch (error) {
         console.error("Error fetching comments of a blog:", error);
         return res.json({ error: "Error fetching comments of a blog" });
     }
 });
+
 
 module.exports = router;

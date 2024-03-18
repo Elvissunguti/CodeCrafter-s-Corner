@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
 
         const token = await getToken(email, user);
 
-        return res.json({ message: "User created successfully", token, userId: user._id });
+        return res.json({ message: "User created successfully", token});
 
     } catch(error){
         console.error("Error signing up new account:", error);
@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
             if(passwordChecker){
                 // generate a Jwt token for authentification
                 const token =await getToken(user.email, user)
-                return res.json({ message: "User logged in successfully", token, userId: user._id });
+                return res.json({ message: "User logged in successfully", token});
             } else{
                 return res.json({ message: "user password does not match"});
             }
