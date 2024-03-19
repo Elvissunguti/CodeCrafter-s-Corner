@@ -12,6 +12,7 @@ const BlogRoutes = require("./src/Backend/Routes/Blog");
 const AdminRoutes = require("./src/Backend/Routes/Admin");
 const bodyParser = require("body-parser");
 const CommentRoutes = require("./src/Backend/Routes/Comments");
+const MyBlogsRoutes = require("./src/Backend/Routes/MyBlogs");
 
 
 const app = express();
@@ -71,6 +72,7 @@ app.use("/auth", AuthRoutes);
 app.use("/blog", BlogRoutes);
 app.use("/admin", AdminRoutes);
 app.use("/comment", CommentRoutes);
+app.use("/myblogs", MyBlogsRoutes);
 
 server.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);

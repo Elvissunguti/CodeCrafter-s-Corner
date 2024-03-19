@@ -7,7 +7,20 @@ const MyBlogs = () => {
         <section>
             <NavBar />
             <div>
-                
+                <ul>
+                    <li>
+                        <Link>Public blogs</Link>
+                    </li>
+                    <li>
+                        <Link>Approved blogs</Link>
+                    </li>
+                    <li>
+                        <Link>Pending blogs</Link>
+                    </li>
+                    <li>
+                        <Link>Private blogs</Link>
+                    </li>
+                </ul>
 
             </div>
         </section>
