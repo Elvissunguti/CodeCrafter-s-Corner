@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logo from "../../Assets/Logo/logo-transparent.png";
 import { Link, useNavigate } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
@@ -8,6 +8,22 @@ const NavBar = () => {
     const { loggedIn, handleLogout } = useAuth();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const navigation = useNavigate();
+    const userMenuRef = useRef(null);
+
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setShowUserMenu(false);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [showUserMenu]);
 
     const toggleUserMenu = () => {
         setShowUserMenu(!showUserMenu);
@@ -51,7 +67,7 @@ const NavBar = () => {
                         </li>
                         <li>
                             {loggedIn ? (
-                                <div className="relative">
+                                <div className="relative" ref={userMenuRef}>
                                     <div onClick={toggleUserMenu} className="">
                                         <FiUser className="text-xl" />
                                     </div>
