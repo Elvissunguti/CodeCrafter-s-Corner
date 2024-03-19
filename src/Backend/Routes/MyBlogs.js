@@ -36,7 +36,8 @@ async (req, res) => {
 
         const approvedBlogs = await Blog.find({
             author: author,
-            approvalStatus: 'approved'
+            approvalStatus: 'approved',
+            isPublic: false
         });
 
         return res.json({ data: approvedBlogs});
@@ -44,6 +45,28 @@ async (req, res) => {
     } catch (error){
         console.error("Error fetching approved blogs", error);
         return res.json({ error: "Error fetching approved blogs" });
+    }
+});
+
+
+// router to fetch pending and rejected blogs
+router.get("/pending/rejected/blog/:author",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const author = req.params.author;
+
+        const blogs = await  Blog.find({
+            author: author,
+            approvalStatus: {$in : ["pending", 'approved']}
+        });
+
+        return res.json({ data: blogs });
+         
+    }catch (error){
+        console.error("Error fetching pending or rejected blogs");
+        return res.json({ error: "fetching pending or rejected blogs" });
     }
 });
 
