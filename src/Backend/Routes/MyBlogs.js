@@ -71,4 +71,25 @@ async (req, res) => {
 });
 
 
+//route to fetch private blogs
+router.get("/private/blogs/:author",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const author = req.params.author;
+
+        const privateBlogs = await Blog.find({
+            author: author,
+            isPublicIntended: false
+        });
+
+        return res.json({ data: privateBlogs })
+
+    } catch (error){
+        console.error("Error fetching private blogs that are not public", error);
+        return res.json({ error: "Error fetching private blogs that are not public" });
+    }
+});
+
 module.exports = router;
