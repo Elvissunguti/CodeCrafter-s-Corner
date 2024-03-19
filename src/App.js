@@ -1,7 +1,7 @@
 import './App.css';
 import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import SignUp from './Component/SignUp/SignUp';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import NavBar from './Component/Home/NavBar';
 import Login from './Component/Login/Login';
@@ -9,33 +9,13 @@ import Blog from './Component/Blog/Blog';
 import UploadBlog from './Component/Blog/UploadBlog';
 import BlogPage from './Component/Shared/BlogPage';
 import { makeAuthenticatedGETRequest } from './Component/Utils/Helpers';
+import { useAuth } from './Component/Context/AuthContext';
 
 function App() {
 
-  const [ loggedIn, setLoggedIn ] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const { loggedIn } = useAuth
 
-  useEffect(() => {
-    // Check if the token exists in cookies to determine if the user is logged in
-    const token = Cookies.get('token');
-    setLoggedIn(!!token);
-    fetchUserId();
-  }, []);
-
-  const fetchUserId = async () => {
-    try {
-      const response = await makeAuthenticatedGETRequest("/auth/userId");
-      setCurrentUserId(response.data);
-    } catch (error) {
-      console.error("Error fetching user ID:", error);
-    }
-  };
-
-
-  const handleLogin = () => {
-    setLoggedIn(true);
-    fetchUserId();
-  };
+  
 
 
   return (
@@ -44,7 +24,9 @@ function App() {
         <Routes>
 
         <Route path="/Blog" element={<Blog />} />
-        <Route path="blog/:blogId" element={<BlogPage  loggedIn={loggedIn} currentUserId={currentUserId} />} />
+        <Route path="blog/:blogId" element={<BlogPage   />} />
+
+        
 
           {loggedIn ? (
             <>
@@ -54,8 +36,8 @@ function App() {
           ) : (
             <>
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/navbar" element={<NavBar />} />
+            <Route path="/login" element={<Login  />} />
+            
             <Route path="/*" element={<NotFound />} />
             </>
           )}

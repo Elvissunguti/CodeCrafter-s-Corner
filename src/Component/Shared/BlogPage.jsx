@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import NavBar from "../Home/NavBar";
 import { makeAuthenticatedPOSTRequest, makeUnauthenticatedGETRequest } from "../Utils/Helpers";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
-const BlogPage = ({ loggedIn, currentUserId }) => {
+const BlogPage = () => {
     const { blogId } = useParams();
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [commentText, setCommentText] = useState("");
     const [fetchComments, setFetchComments] = useState([]);
+    const { loggedIn, currentUserId } = useAuth(); 
     const navigate = useNavigate();
 
     useEffect(() => {

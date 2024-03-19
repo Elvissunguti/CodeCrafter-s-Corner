@@ -41,7 +41,7 @@ async (req, res) => {
         const userId = req.user._id;
         const commentId = req.params.commentId;
 
-        const updatedCommentText = req.body.updatedCommentText;
+        const commentText = req.body.commentText;
 
         const comment = await Comment.findById(commentId)
 
@@ -53,7 +53,7 @@ async (req, res) => {
             return res.json({ Error: "You are not authorized to edit this comment" });
         }
 
-        comment.commentText = updatedCommentText;
+        comment.commentText = commentText;
         await comment.save();
 
         res.json({ message: "Comment updated successfully" });
