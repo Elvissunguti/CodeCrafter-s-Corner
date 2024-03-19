@@ -25,4 +25,27 @@ async (req, res) => {
     }
 });
 
+
+// router to fetch approved Blogs
+router.get("/approved/blogs/:author",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const author = req.params.author;
+
+        const approvedBlogs = await Blog.find({
+            author: author,
+            approvalStatus: 'approved'
+        });
+
+        return res.json({ data: approvedBlogs});
+
+    } catch (error){
+        console.error("Error fetching approved blogs", error);
+        return res.json({ error: "Error fetching approved blogs" });
+    }
+});
+
+
 module.exports = router;
