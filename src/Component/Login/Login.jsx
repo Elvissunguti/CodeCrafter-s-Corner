@@ -3,7 +3,7 @@ import { makeUnauthenticatedPOSTRequest } from "../Utils/Helpers";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-const Login = ({ onLogin }) => {
+const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     passWord: ""
@@ -30,7 +30,7 @@ const Login = ({ onLogin }) => {
       if (response.message === "User logged in successfully") {
         const  token  = response.token;
         Cookies.set("token", token, { expires: 7 });
-        onLogin();
+        
         navigate("/");
       } else {
         setLoginError(response.message);

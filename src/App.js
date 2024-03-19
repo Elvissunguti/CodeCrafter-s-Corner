@@ -1,36 +1,31 @@
 import './App.css';
 import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import SignUp from './Component/SignUp/SignUp';
-import { useContext, useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import NavBar from './Component/Home/NavBar';
 import Login from './Component/Login/Login';
 import Blog from './Component/Blog/Blog';
 import UploadBlog from './Component/Blog/UploadBlog';
 import BlogPage from './Component/Shared/BlogPage';
-import { makeAuthenticatedGETRequest } from './Component/Utils/Helpers';
 import { useAuth } from './Component/Context/AuthContext';
+import MyBlogs from './Component/MyBlog/MyBlogs';
 
 function App() {
 
-  const { loggedIn } = useAuth
+  const { loggedIn } = useAuth();
 
   
-
-
   return (
     <div className="App">
       <Router>
         <Routes>
 
         <Route path="/Blog" element={<Blog />} />
-        <Route path="blog/:blogId" element={<BlogPage   />} />
+        <Route path="/blog/:blogId" element={<BlogPage   />} />
 
-        
 
           {loggedIn ? (
             <>
             <Route path="/blog/upload" element={<UploadBlog  />} />
+            <Route path="/my_blogs" element={<MyBlogs />} />
 
             </>
           ) : (

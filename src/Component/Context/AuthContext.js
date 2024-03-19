@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleLogout = () => {
-        // Handle logout logic here
+        Cookies.remove("token");
         setLoggedIn(false);
         setCurrentUserId(null);
     };
