@@ -13,7 +13,7 @@ const MyBlogs = () => {
                         <Link to="/public_blogs">Public blogs</Link>
                     </li>
                     <li>
-                        <Link>Approved blogs</Link>
+                        <Link to="/approved_blogs">Approved blogs</Link>
                     </li>
                     <li>
                         <Link>Pending blogs</Link>

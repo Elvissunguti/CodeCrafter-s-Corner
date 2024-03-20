@@ -60,20 +60,43 @@ async (req, res) => {
 
 
 // router to fetch approved Blogs
-router.get("/approved/blogs/:author",
+router.get("/approved/blogs/:currentUserId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
 
-        const author = req.params.author;
+        const currentUserId = req.params.currentUserId;
 
         const approvedBlogs = await Blog.find({
-            author: author,
+            author: currentUserId,
             approvalStatus: 'approved',
             isPublic: false
         });
 
-        return res.json({ data: approvedBlogs});
+        const formattedBlogs =  await Promise.all(approvedBlogs.map(async (blog) => {
+            const author = await User.findById(blog.author);
+
+            const paragraphs = blog.paragraph.map((paragraph) => {
+                return {
+                    content: paragraph.content,
+                    media: {
+                        images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                        videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+                    }
+                };
+            });
+
+            return {
+                blogId: blog._id,
+                title: blog.title,
+                thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
+                paragraphs: paragraphs,
+                userName: author ? author.userName : "Unknown",
+                approvalStatus: blog.approvalStatus
+            };
+        }));
+
+        return res.json({ data: formattedBlogs });
 
     } catch (error){
         console.error("Error fetching approved blogs", error);
