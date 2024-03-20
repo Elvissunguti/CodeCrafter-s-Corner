@@ -106,19 +106,44 @@ async (req, res) => {
 
 
 // router to fetch pending and rejected blogs
-router.get("/pending/rejected/blog/:author",
+router.get("/pending/rejected/blog/:currentUserId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
 
-        const author = req.params.author;
+        const currentUserId = req.params.currentUserId;
 
-        const blogs = await  Blog.find({
-            author: author,
-            approvalStatus: {$in : ["pending", 'approved']}
+        const pendingRejectedBlogs = await  Blog.find({
+            author: currentUserId,
+            isPublicIntended: true,
+            approvalStatus: {$in : ["pending", 'rejected']}
         });
 
-        return res.json({ data: blogs });
+        const formattedBlogs =  await Promise.all(pendingRejectedBlogs.map(async (blog) => {
+            const author = await User.findById(blog.author);
+
+            const paragraphs = blog.paragraph.map((paragraph) => {
+                return {
+                    content: paragraph.content,
+                    media: {
+                        images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                        videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+                    }
+                };
+            });
+
+            return {
+                blogId: blog._id,
+                title: blog.title,
+                thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
+                paragraphs: paragraphs,
+                userName: author ? author.userName : "Unknown",
+                approvalStatus: blog.approvalStatus,
+                rejectionReason: blog.rejectionReason
+            };
+        }));
+
+        return res.json({ data: formattedBlogs });
          
     }catch (error){
         console.error("Error fetching pending or rejected blogs");

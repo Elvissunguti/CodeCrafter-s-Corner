@@ -16,7 +16,7 @@ const MyBlogs = () => {
                         <Link to="/approved_blogs">Approved blogs</Link>
                     </li>
                     <li>
-                        <Link>Pending blogs</Link>
+                        <Link to="/pending_rejected_blogs">Pending blogs</Link>
                     </li>
                     <li>
                         <Link>Private blogs</Link>
