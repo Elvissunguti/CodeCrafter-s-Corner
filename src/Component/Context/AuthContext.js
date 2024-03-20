@@ -30,8 +30,8 @@ export const AuthProvider = ({ children }) => {
             const response = await makeAuthenticatedGETRequest("/auth/userId");
             setCurrentUserId(response.data);
         } catch (error) {
-            console.error("Error logging in:", error);
-            // Handle login error
+            console.error("Error fetching user Id of current user:", error);
+            
         }
     };
 

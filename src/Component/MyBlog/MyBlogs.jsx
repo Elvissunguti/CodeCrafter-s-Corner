@@ -1,5 +1,6 @@
 import React from "react";
 import NavBar from "../Home/NavBar";
+import { Link } from "react-router-dom";
 
 
 const MyBlogs = () => {
@@ -9,7 +10,7 @@ const MyBlogs = () => {
             <div>
                 <ul>
                     <li>
-                        <Link>Public blogs</Link>
+                        <Link to="/public_blogs">Public blogs</Link>
                     </li>
                     <li>
                         <Link>Approved blogs</Link>

@@ -7,6 +7,7 @@ import UploadBlog from './Component/Blog/UploadBlog';
 import BlogPage from './Component/Shared/BlogPage';
 import { useAuth } from './Component/Context/AuthContext';
 import MyBlogs from './Component/MyBlog/MyBlogs';
+import PublicBlog from './Component/Shared/PublicBlogs';
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
             <>
             <Route path="/blog/upload" element={<UploadBlog  />} />
             <Route path="/my_blogs" element={<MyBlogs />} />
+            <Route path="/public_blogs" element={<PublicBlog />} />
 
             </>
           ) : (

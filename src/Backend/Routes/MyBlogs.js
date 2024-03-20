@@ -1,22 +1,55 @@
 const express = require("express");
 const passport = require("passport");
 const Blog = require("../Model/Blog");
+const User = require("../Model/User");
 const router = express.Router();
 
 
 // router to fetch user's public Blog
-router.get("/public/blogs/:author",
+router.get("/public/blogs/:currentUserId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
-        const author = req.params.author;
+        const currentUserId = req.params.currentUserId;
+
+        if (!currentUserId) {
+            return res.status(400).json({ error: "currentUserId is missing" });
+        }
+
+        // Add validation to ensure currentUserId belongs to the authenticated user
+        if (currentUserId !== req.user.id) {
+            return res.status(403).json({ error: "Unauthorized access to user's blogs" });
+        }
 
         const blogs = await Blog.find({
-            author: author,
-            isPublic: true
+            author: currentUserId,
+            isPublic: true,
+            approvalStatus: "approved"
         });
 
-        return res.json({ data: blogs})
+        const formattedBlogs =  await Promise.all(blogs.map(async (blog) => {
+            const author = await User.findById(blog.author);
+
+            const paragraphs = blog.paragraph.map((paragraph) => {
+                return {
+                    content: paragraph.content,
+                    media: {
+                        images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                        videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+                    }
+                };
+            });
+
+            return {
+                blogId: blog._id,
+                title: blog.title,
+                thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
+                paragraphs: paragraphs,
+                userName: author ? author.userName : "Unknown",
+            };
+        }));
+
+        return res.json({ data: formattedBlogs });
 
     } catch (error){
         console.error("Error getting public blogs of the current user", error);

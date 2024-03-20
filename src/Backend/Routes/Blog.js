@@ -6,8 +6,6 @@ const multerConfig = require("../Middleware/Blog");
 const User = require("../Model/User");
 
 
-
-
 const getMediaType = (filename) => {
     const extension = filename.split('.').pop().toLowerCase();
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'jfif', 'tiff', 'ico', 'psd', 'ai', 'eps', 'raw', 'xcf', 'pdf'];
@@ -15,7 +13,7 @@ const getMediaType = (filename) => {
 
     if (imageExtensions.includes(extension)) {
         return 'image';
-    } else if (videoExtensions.includes(extension)) {
+    } else if (videoExtensions.includes(extension)){
         return 'video';
     } else {
         return null; // Unsupported media type
