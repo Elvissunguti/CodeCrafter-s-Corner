@@ -26,7 +26,8 @@ export const makeAuthenticatedPOSTRequest = async (route, body) => {
     return formattedResponse;
 };
 
-export const makeAuthenticatedMulterPostRequest = async (route, formData) => {
+// Updated makeAuthenticatedMulterPostRequest function with upload progress tracking
+export const makeAuthenticatedMulterPostRequest = async (route, formData, options = {}) => {
     try {
         const token = getToken();
         const response = await fetch(backendUrl + route, {
@@ -35,10 +36,28 @@ export const makeAuthenticatedMulterPostRequest = async (route, formData) => {
                 Authorization: `Bearer ${token}`,
             },
             body: formData,
+            ...options // Include additional options
         });
-        
+
         if (!response.ok) {
             throw new Error(`Request failed with status: ${response.status}`);
+        }
+
+        const { onUploadProgress } = options;
+        if (onUploadProgress && typeof onUploadProgress === 'function') {
+            const contentLength = parseInt(response.headers.get('Content-Length'));
+            const reader = response.body.getReader();
+            let bytesUploaded = 0;
+
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) break;
+
+                bytesUploaded += value.length;
+                const progress = Math.round((bytesUploaded / contentLength) * 100);
+                onUploadProgress(progress);
+            }
         }
 
         const formattedResponse = await response.json();

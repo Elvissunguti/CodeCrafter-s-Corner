@@ -6,6 +6,8 @@ const UploadBlog = () => {
     const [title, setTitle] = useState("");
     const [thumbnail, setThumbnail] = useState(null);
     const [paragraphs, setParagraphs] = useState([{ content: "", media: null }]);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,7 +25,15 @@ const UploadBlog = () => {
 
             console.log("Data being sent to the backend:", formData);
 
-            const response = await makeAuthenticatedMulterPostRequest('/blog/create', formData);
+            const response = await makeAuthenticatedMulterPostRequest('/blog/create', formData, {
+                onUploadProgress: (progress) => {
+                    setUploadProgress(progress);
+                    if (progress === 100) {
+                        setShowSuccessPopup(true);
+                    }
+                }
+            });
+
             console.log("Response from backend:", response);
 
             if (response.error) {
@@ -31,9 +41,8 @@ const UploadBlog = () => {
                 // Handle error message from backend
             } else {
                 console.log("Blog created successfully:", response.message);
-                setTitle("");
-                setThumbnail(null);
-                setParagraphs([{ content: "", media: null }]);
+                setShowSuccessPopup(true);
+                setUploadProgress(0);
             }
 
         } catch (error) {
@@ -68,6 +77,11 @@ const UploadBlog = () => {
             newParagraphs.splice(index, 1);
             return newParagraphs;
         });
+    };
+
+    const handleOkButtonClick = () => {
+        setShowSuccessPopup(false);
+        window.location.reload(); // Refresh the page when OK button is clicked
     };
 
     return (
@@ -112,8 +126,25 @@ const UploadBlog = () => {
                         </div>
                     ))}
                     <button type="button" onClick={addParagraph}>Add Paragraph</button>
+                    {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
                     <button type="submit">Submit</button>
                 </form>
+                {showSuccessPopup && (
+                        <div className="popup">
+                            <div className="popup-inner">
+                                {uploadProgress < 100 ? (
+                                    <div>
+                                        <p>Uploading... {uploadProgress}%</p>
+                                        <progress value={uploadProgress} max="100" />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p>Blog uploaded successfully!</p>
+                                        <button onClick={handleOkButtonClick}>OK</button>
+                                    </div>
+                                )}                            </div>
+                        </div>
+                    )}
             </div>
         </section>
     );
