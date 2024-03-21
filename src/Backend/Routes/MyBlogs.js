@@ -4,6 +4,28 @@ const Blog = require("../Model/Blog");
 const User = require("../Model/User");
 const router = express.Router();
 
+//router to change a blog to be intended for public so as to get admin approval of it
+router.post("/change/ispublicintended/:blogId",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const blogId = req.params.blogId;
+
+        const privateBlog = await Blog.findById(blogId);
+
+        privateBlog.isPublicIntended = true;
+        await privateBlog.save();
+
+        return res.json({ message: "Blog status updated successfully" });
+
+    } catch (error){
+        console.error("Error changing the status of a blog isPublicIntended to true", error);
+        return res.json({ error: "Error changing the status of a blog isPublicIntended to true" });
+    }
+});
+
+
 
 // router to fetch user's public Blog
 router.get("/public/blogs/:currentUserId",
@@ -162,7 +184,9 @@ async (req, res) => {
 
         const privateBlogs = await Blog.find({
             author: currentUserId,
-            isPublicIntended: false
+            isPublicIntended: false,
+            isPublic: false,
+            approvalStatus: "pending"
         });
 
         const formattedBlogs =  await Promise.all(privateBlogs.map(async (blog) => {
@@ -184,7 +208,8 @@ async (req, res) => {
                 thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
                 paragraphs: paragraphs,
                 userName: author ? author.userName : "Unknown",
-                approvalStatus: blog.approvalStatus
+                approvalStatus: blog.approvalStatus,
+                isPublicIntended: blog.isPublicIntended
             };
         }));
 

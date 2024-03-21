@@ -142,7 +142,8 @@ const UploadBlog = () => {
                                         <p>Blog uploaded successfully!</p>
                                         <button onClick={handleOkButtonClick}>OK</button>
                                     </div>
-                                )}                            </div>
+                                )}
+                            </div>
                         </div>
                     )}
             </div>
