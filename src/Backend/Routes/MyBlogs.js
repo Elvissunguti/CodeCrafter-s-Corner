@@ -153,24 +153,50 @@ async (req, res) => {
 
 
 //route to fetch private blogs
-router.get("/private/blogs/:author",
+router.get("/private/blogs/:currentUserId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
 
-        const author = req.params.author;
+        const currentUserId = req.params.currentUserId;
 
         const privateBlogs = await Blog.find({
-            author: author,
+            author: currentUserId,
             isPublicIntended: false
         });
 
-        return res.json({ data: privateBlogs })
+        const formattedBlogs =  await Promise.all(privateBlogs.map(async (blog) => {
+            const author = await User.findById(blog.author);
+
+            const paragraphs = blog.paragraph.map((paragraph) => {
+                return {
+                    content: paragraph.content,
+                    media: {
+                        images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                        videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+                    }
+                };
+            });
+
+            return {
+                blogId: blog._id,
+                title: blog.title,
+                thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
+                paragraphs: paragraphs,
+                userName: author ? author.userName : "Unknown",
+                approvalStatus: blog.approvalStatus
+            };
+        }));
+
+        return res.json({ data: formattedBlogs });
 
     } catch (error){
         console.error("Error fetching private blogs that are not public", error);
         return res.json({ error: "Error fetching private blogs that are not public" });
     }
 });
+
+
+
 
 module.exports = router;
