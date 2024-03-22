@@ -98,19 +98,19 @@ async (req, res) => {
 
         console.log("Authenticated user:", req.user);
 
-                    // Check if the authenticated user making the request is CodeCrafter
-                    if (req.user && req.user.userName !== "CodeCrafter") {
-                        return res.status(403).json({ message: "Only CodeCrafter can create new admins" });
-                    }
+        // Check if the authenticated user making the request is CodeCrafter
+        if (req.user && req.user.userName !== "CodeCrafter") {
+                return res.status(403).json({ message: "Only CodeCrafter can create new admins" });
+            }
 
         const { targetUserName } = req.body;
 
         const userToAdmin = await User.findOne({ userName: targetUserName });
 
-                    // Check if the user exists
-                    if (!userToAdmin) {
-                        return res.status(404).json({ message: "User not found" });
-                    }
+            // Check if the user exists
+            if (!userToAdmin) {
+                return res.status(404).json({ message: "User not found" });
+               }
 
 
         userToAdmin.isAdmin = true;
@@ -122,6 +122,38 @@ async (req, res) => {
     } catch(error){
         console.error("Error making a user an admin:", error);
         return res.json({ Error: "Error making a user an admin"})
+    }
+});
+
+
+// router to remove a user as an admin
+router.post("/remove/:userName",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const userName = req.params.userName;
+
+        if (req.user && req.user.userName !== "CodeCrafter") {
+            return res.status(403).json({ message: "Only CodeCrafter can create new admins" });
+        }
+
+        const userToAdmin = await User.findOne({userName: userName});
+
+        // Check if the user exists
+        if (!userToAdmin) {
+            return res.status(404).json({ message: "User not found" });
+           }
+
+        userToAdmin.isAdmin = false;
+
+        await userToAdmin.save(req.user);
+
+        return res.json({ message: `${userName} is removed as an admin` });
+
+    } catch (error){
+        console.error("Error removing a user as an admin", error);
+        return res.json({ error: "Error removing a user as an admin"});
     }
 });
 
