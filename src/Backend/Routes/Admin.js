@@ -12,13 +12,39 @@ async (req, res) => {
 
         const blogs = await Blog.find({ approvalStatus: "pending", isPublicIntended: true});
 
-        return res.json({ data: blogs});
+        const formattedBlogs =  await Promise.all(blogs.map(async (blog) => {
+            const author = await User.findById(blog.author);
+
+            const paragraphs = blog.paragraph.map((paragraph) => {
+                return {
+                    content: paragraph.content,
+                    media: {
+                        images: paragraph.media.images ? `/${paragraph.media.images}` : null,
+                        videos: paragraph.media.videos ? `/${paragraph.media.videos}` : null
+                    }
+                };
+            });
+
+            return {
+                blogId: blog._id,
+                title: blog.title,
+                thumbnail: blog.thumbnail ? `/${blog.thumbnail}` : null,
+                paragraphs: paragraphs,
+                userName: author ? author.userName : "Unknown",
+                approvalStatus: blog.approvalStatus,
+                rejectionReason: blog.rejectionReason
+            };
+        }));
+
+        return res.json({ data: formattedBlogs });
+
 
     } catch (error){
         console.error("Error fetching blogs that are waiting approval", error);
         return res.json({ message: "Error fetching blogs that are waiting for approval"})
     }
 });
+
 
 // router to make  a decision on whether or not to approve a blog post
 router.post("/blog/approve/:blogId",
@@ -27,7 +53,7 @@ async (req, res) => {
     try{
         const userId = req.user._id;
         const { blogId } = req.params;
-        const { approve } = req.body;
+        const { approve, rejectionReason } = req.body;
 
         const user = await User.findById(userId);
 
@@ -50,6 +76,7 @@ async (req, res) => {
               blog.isPublic = true; // Mark the blog as public
         } else {
               blog.approvalStatus = 'rejected';
+              blog.rejectionReason = rejectionReason;
         }
 
         await blog.save();

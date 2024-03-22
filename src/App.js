@@ -11,6 +11,7 @@ import PublicBlog from './Component/Shared/PublicBlogs';
 import ApprovedBlog from './Component/Shared/ApprovedBlogs';
 import PendingRejectedBlogs from './Component/Shared/PendingRejectedBlog';
 import PrivateBlogs from './Component/Shared/PrivateBlogs';
+import ApproveBlogs from './Component/Admin/ApproveBlogs';
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
             <Route path="/approved_blogs" element={<ApprovedBlog />} />
             <Route path="/pending_rejected_blogs" element={<PendingRejectedBlogs />} />
             <Route path="/private_blogs" element={<PrivateBlogs />} />
+            <Route path="/admin/approve_blogs" element={<ApproveBlogs />} />
 
             </>
           ) : (

@@ -55,7 +55,7 @@ const PendingRejectedBlogs = () => {
                             <p className="text-gray-700">{truncateContent(blog.paragraphs[0].content, 50)}</p>
                             <div className="mt-2 flex items-center justify-between">
                                 <span className="text-sm text-gray-600">{blog.userName}</span>
-                                <p>Status: {blog.approvalSatus}</p>
+                                <p>Status: {blog.approvalStatus}</p>
                                 <a href={`/blog/${blog.blogId}`} className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Read More</a>
                             </div>
                         </div>

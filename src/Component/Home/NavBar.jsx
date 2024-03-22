@@ -5,7 +5,7 @@ import { FiUser } from "react-icons/fi";
 import { useAuth } from "../Context/AuthContext";
 
 const NavBar = () => {
-    const { loggedIn, handleLogout } = useAuth();
+    const { loggedIn, isAdmin, handleLogout } = useAuth();
     const [showUserMenu, setShowUserMenu] = useState(false);
     const navigation = useNavigate();
     const userMenuRef = useRef(null);
@@ -78,7 +78,14 @@ const NavBar = () => {
                                                     My Blogs
                                                 </Link>
                                             </li>
+                                            {isAdmin && ( // Conditionally render "Admin" link
                                             <li>
+                                                 <Link to="/admin/approve_blogs" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                                    Admin
+                                                 </Link>
+                                             </li>
+                                             )}
+                                              <li>
                                                 <button onClick={handleLogoutClick} className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
                                                     Logout
                                                 </button>

@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     
     const [loggedIn, setLoggedIn] = useState(false);
     const [currentUserId, setCurrentUserId] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
 
     useEffect(() => {
@@ -28,7 +29,8 @@ export const AuthProvider = ({ children }) => {
         try {
             
             const response = await makeAuthenticatedGETRequest("/auth/userId");
-            setCurrentUserId(response.data);
+            setCurrentUserId(response.data._id);
+            setIsAdmin(response.data.isAdmin);
         } catch (error) {
             console.error("Error fetching user Id of current user:", error);
             
@@ -39,11 +41,14 @@ export const AuthProvider = ({ children }) => {
         Cookies.remove("token");
         setLoggedIn(false);
         setCurrentUserId(null);
+        setIsAdmin(false);
     };
+
+    
     return(
 
 
-        <AuthContext.Provider value={{ loggedIn, currentUserId, handleLogout}}>
+        <AuthContext.Provider value={{ loggedIn, currentUserId, isAdmin, handleLogout}}>
             {children}
         </AuthContext.Provider>
     )
