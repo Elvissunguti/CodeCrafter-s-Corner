@@ -157,4 +157,20 @@ async (req, res) => {
     }
 });
 
+
+router.get("/fetch/users",
+passport.authenticate("jwt", {session: false}),
+async (req, res) => {
+    try{
+
+        const fetchedUsers = await User.find({ userName: { $ne: "CodeCrafter" }});
+
+        return res.json({ data: fetchedUsers });
+
+    } catch(error){
+        console.error("Error fetching users", error);
+        return res.json({ error: "Error fetching users" });
+    }
+});
+
 module.exports = router;

@@ -78,12 +78,12 @@ async (req, res) => {
             return res.status(404).json({ error: "User not found" });
           }
 
-          const { _id, isAdmin } = user;
+          const { _id, isAdmin, userName } = user;
 
-          return res.json({ data: { _id, isAdmin } });
+          return res.json({ data: { _id, isAdmin, userName } });
 
     } catch(error){
-        console.error("Error fetching userid", error);
+        console.error("Error fetching userId", error);
         return res.json({ error: "Error fetching userId" });
     }
 });
