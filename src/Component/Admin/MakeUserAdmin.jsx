@@ -4,13 +4,12 @@ import { makeAuthenticatedGETRequest, makeAuthenticatedPOSTRequest } from "../Ut
 const MakeUserAdmin = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await makeAuthenticatedGETRequest(
-                    "/admin/fetch/users"
-                    );
+                const response = await makeAuthenticatedGETRequest("/admin/fetch/users");
                 setUsers(response.data);
             } catch (error) {
                 console.error("Error fetching users", error);
@@ -30,11 +29,7 @@ const MakeUserAdmin = () => {
             ));
 
             // Make API request
-            await makeAuthenticatedPOSTRequest(
-                `/admin/create/${userId}`
-                );
-            
-            
+            await makeAuthenticatedPOSTRequest(`/admin/create/${userId}`);
         } catch (error) {
             console.error("Error making a user an Admin", error);
             setUsers(prevUsers => prevUsers.map(user =>
@@ -49,10 +44,7 @@ const MakeUserAdmin = () => {
                 user._id === userId ? { ...user, isAdmin: false } : user
             ));
 
-            await makeAuthenticatedPOSTRequest(
-                `/admin/remove/${userId}`
-                );
-            
+            await makeAuthenticatedPOSTRequest(`/admin/remove/${userId}`);
         } catch (error) {
             console.error("Error removing admin rights from user", error);
             setUsers(prevUsers => prevUsers.map(user =>
@@ -61,17 +53,32 @@ const MakeUserAdmin = () => {
         }
     };
 
+    // Filter users based on search query
+    const filteredUsers = users.filter(user =>
+        user.userName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
     return (
         <section>
             <div>
                 <h2>User List</h2>
+                <input
+                    type="text"
+                    placeholder="Search by username"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                />
                 {loading ? (
                     <p>Loading...</p>
-                ) : users.length === 0 ? (
+                ) : filteredUsers.length === 0 ? (
                     <p>No users found.</p>
                 ) : (
                     <ul>
-                        {users.map(user => (
+                        {filteredUsers.map(user => (
                             <li key={user._id} className="flex">
                                 <p className="mr-4">{user.userName}</p>
                                 {user.isAdmin ? (
