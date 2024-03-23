@@ -19,7 +19,7 @@ const AdminPage = () => {
                         </li>
                         {userName === "CodeCrafter" && ( 
                             <li>
-                                <Link to="/make-user-admin">Make User Admin</Link>
+                                <Link to="/admin/make_user_admin">Make User Admin</Link>
                             </li>
                         )}
                     </ul>

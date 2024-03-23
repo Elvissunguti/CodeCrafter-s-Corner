@@ -91,21 +91,19 @@ async (req, res) => {
 });
 
 // router to make a user an admin
-router.post("/create",
+router.post("/create/:userId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
-
-        console.log("Authenticated user:", req.user);
 
         // Check if the authenticated user making the request is CodeCrafter
         if (req.user && req.user.userName !== "CodeCrafter") {
                 return res.status(403).json({ message: "Only CodeCrafter can create new admins" });
             }
 
-        const { targetUserName } = req.body;
+        const { userId } = req.params;
 
-        const userToAdmin = await User.findOne({ userName: targetUserName });
+        const userToAdmin = await User.findById({ _id: userId });
 
             // Check if the user exists
             if (!userToAdmin) {
@@ -117,7 +115,7 @@ async (req, res) => {
 
         await userToAdmin.save(req.user);
 
-        return res.json({ message: `${targetUserName} is now an admin` });
+        return res.json({ message: `${userToAdmin.userName} is now an admin` });
 
     } catch(error){
         console.error("Error making a user an admin:", error);
@@ -127,18 +125,18 @@ async (req, res) => {
 
 
 // router to remove a user as an admin
-router.post("/remove/:userName",
+router.post("/remove/:userId",
 passport.authenticate("jwt", {session: false}),
 async (req, res) => {
     try{
 
-        const userName = req.params.userName;
+        const { userId } = req.params;
 
         if (req.user && req.user.userName !== "CodeCrafter") {
             return res.status(403).json({ message: "Only CodeCrafter can create new admins" });
         }
 
-        const userToAdmin = await User.findOne({userName: userName});
+        const userToAdmin = await User.findById({ _id: userId });
 
         // Check if the user exists
         if (!userToAdmin) {
@@ -149,7 +147,7 @@ async (req, res) => {
 
         await userToAdmin.save(req.user);
 
-        return res.json({ message: `${userName} is removed as an admin` });
+        return res.json({ message: `${userToAdmin.userName} is removed as an admin` });
 
     } catch (error){
         console.error("Error removing a user as an admin", error);

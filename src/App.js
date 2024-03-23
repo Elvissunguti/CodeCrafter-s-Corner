@@ -13,6 +13,7 @@ import PendingRejectedBlogs from './Component/Shared/PendingRejectedBlog';
 import PrivateBlogs from './Component/Shared/PrivateBlogs';
 import ApproveBlogs from './Component/Admin/ApproveBlogs';
 import AdminPage from './Component/Admin/AdminPage';
+import MakeUserAdmin from './Component/Admin/MakeUserAdmin';
 
 function App() {
 
@@ -38,6 +39,7 @@ function App() {
             <Route path="/private_blogs" element={<PrivateBlogs />} />
             <Route path="/admin_page" element={<AdminPage />} />
             <Route path="/admin/approve_blogs" element={<ApproveBlogs />} />
+            <Route path="/admin/make_user_admin" element={<MakeUserAdmin />} />
 
             </>
           ) : (
