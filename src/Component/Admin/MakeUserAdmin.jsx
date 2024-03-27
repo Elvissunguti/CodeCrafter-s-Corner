@@ -63,34 +63,33 @@ const MakeUserAdmin = () => {
     };
 
     return (
-        <section>
-            <div>
-                <h2>User List</h2>
-                <input
-                    type="text"
-                    placeholder="Search by username"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                />
-                {loading ? (
-                    <p>Loading...</p>
-                ) : filteredUsers.length === 0 ? (
-                    <p>No users found.</p>
-                ) : (
-                    <ul>
-                        {filteredUsers.map(user => (
-                            <li key={user._id} className="flex">
-                                <p className="mr-4">{user.userName}</p>
-                                {user.isAdmin ? (
-                                    <button onClick={() => handleRemoveAdmin(user._id)}>Remove user as Admin</button>
-                                ) : (
-                                    <button onClick={() => handleMakeAdmin(user._id)}>Make user Admin</button>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+        <section className="p-4">
+            <h2 className="text-xl font-semibold mb-4">User List</h2>
+            <input
+                type="text"
+                placeholder="Search by username"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="border border-gray-300 rounded-md px-3 py-1 mb-4"
+            />
+            {loading ? (
+                <p>Loading...</p>
+            ) : filteredUsers.length === 0 ? (
+                <p>No users found.</p>
+            ) : (
+                <ul>
+                    {filteredUsers.map(user => (
+                        <li key={user._id} className="flex items-center justify-between border-b py-2">
+                            <p className="text-lg">{user.userName}</p>
+                            {user.isAdmin ? (
+                                <button onClick={() => handleRemoveAdmin(user._id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md">Remove Admin</button>
+                            ) : (
+                                <button onClick={() => handleMakeAdmin(user._id)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md">Make Admin</button>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </section>
     );
 };

@@ -20,6 +20,9 @@ const Login = () => {
       ...formData,
       [name]: value
     });
+    
+    // Reset login error when user starts typing
+  setLoginError("");
   };
 
   const handleSubmit = async (e) => {
@@ -67,12 +70,12 @@ const Login = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password:</label>
+            <label htmlFor="passWord" className="block text-sm font-medium text-gray-700">Password:</label>
             <input
               type="password"
-              id="password"
-              name="password"
-              value={formData.password}
+              id="passWord"
+              name="passWord"
+              value={formData.passWord}
               onChange={handleChange}
               className="border rounded-md px-3 py-2 w-full mt-1 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Your password"
