@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeAuthenticatedGETRequest } from "../Utils/Helpers";
 import { useAuth } from "../Context/AuthContext";
-import NavBar from "../Home/NavBar";
 
 const PublicBlog = () => {
     const [blogs, setBlogs] = useState([]);
@@ -26,7 +25,7 @@ const PublicBlog = () => {
         fetchBlog();
     }, [currentUserId]);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>;
     if (error) return <div>{error}</div>;
 
 
@@ -44,9 +43,8 @@ const PublicBlog = () => {
 
     return (
         <section>
-            <NavBar />
             <div>
-                <h1 className="text-2xl font-medium">My public blogs</h1>
+                <h1 className="text-2xl my-8 font-medium">My public blogs</h1>
             </div>
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs && blogs.length === 0 && <p>No blogs to display</p>}

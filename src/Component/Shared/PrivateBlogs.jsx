@@ -5,6 +5,9 @@ import { useAuth } from "../Context/AuthContext";
 const PrivateBlogs = () => {
     const [blogs, setBlogs] = useState([]);
     const { currentUserId } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
 
     useEffect(() => {
         const getPrivateBlogs = async () => {
@@ -13,8 +16,11 @@ const PrivateBlogs = () => {
                     `/myblogs/private/blogs/${currentUserId}`
                     );
                 setBlogs(response.data);
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching private blogs", error);
+                setError("Error fetching blogs. Please try again later.");
+                setLoading(false);
             }
         };
         getPrivateBlogs();
@@ -47,10 +53,23 @@ const PrivateBlogs = () => {
         return `/Images/${imageFilename}`;
     };
 
+
+    if (loading) return <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>;
+    if (error) return <div>{error}</div>;
+
+
     return (
         <section>
-            <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogs && blogs.length === 0 && <p>No blogs to display</p>}
+            <h1 className="text-2xl my-8 font-medium">Private Blogs</h1>
+            {blogs && blogs.length === 0 && (
+                        <div className="flex justify-center mt-6 h-full">
+                            <p className="text-center text-gray-600 text-2xl mx-auto">
+                                No blogs to display
+                            </p>
+                        </div>
+                    )}
+            <div className="mx-auto my-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               
                 {blogs && blogs.map((blog, index) => (
                     <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md">
                         {blog.thumbnail && (
