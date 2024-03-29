@@ -60,13 +60,21 @@ const ApproveBlogs = () => {
         return `/Images/${imageFilename}`;
     };
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>;
     if (error) return <p>Error: {error}</p>;
 
     return (
         <section>
+            <h2 className="text-2xl my-8 font-medium">Blogs to Approve</h2>
+            {blogs && blogs.length === 0 && (
+                        <div className="flex justify-center mt-6 h-full">
+                            <p className="text-center text-gray-600 text-2xl mx-auto">
+                                No blogs to display
+                            </p>
+                        </div>
+                    )}
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogs.length === 0 && <p>No blogs to display</p>}
+               
                 {blogs.map((blog) => (
                     <div key={blog.blogId} className="bg-white rounded-lg overflow-hidden shadow-md">
                         {blog.thumbnail && (

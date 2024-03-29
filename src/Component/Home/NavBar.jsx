@@ -78,6 +78,11 @@ const NavBar = () => {
                                                     My Blogs
                                                 </Link>
                                             </li>
+                                            <li>
+                                                <Link to="/blog/upload" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                                   Upload Blogs
+                                                </Link>
+                                            </li>
                                             {isAdmin && ( // Conditionally render "Admin" link
                                             <li>
                                                  <Link to="/admin_page" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">

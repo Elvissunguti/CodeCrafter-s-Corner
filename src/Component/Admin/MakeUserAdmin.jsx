@@ -73,9 +73,9 @@ const MakeUserAdmin = () => {
                 className="border border-gray-300 rounded-md px-3 py-1 mb-4"
             />
             {loading ? (
-                <p>Loading...</p>
+                <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>
             ) : filteredUsers.length === 0 ? (
-                <p>No users found.</p>
+                <p className="text-center text-gray-600 text-2xl mx-auto">No users found.</p>
             ) : (
                 <ul>
                     {filteredUsers.map(user => (

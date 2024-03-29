@@ -14,6 +14,8 @@ import PrivateBlogs from './Component/Shared/PrivateBlogs';
 import ApproveBlogs from './Component/Admin/ApproveBlogs';
 import AdminPage from './Component/Admin/AdminPage';
 import MakeUserAdmin from './Component/Admin/MakeUserAdmin';
+import About from './Component/About/About';
+import Resources from './Component/Resources/Resources';
 
 function App() {
 
@@ -33,6 +35,8 @@ function App() {
             <>
             <Route path="/blog/upload" element={<UploadBlog  />} />
             <Route path="/my_blogs" element={<MyBlogs />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/public_blogs" element={<PublicBlog />} />
             <Route path="/approved_blogs" element={<ApprovedBlog />} />
             <Route path="/pending_rejected_blogs" element={<PendingRejectedBlogs />} />

@@ -3,15 +3,16 @@ import { useAuth } from "../Context/AuthContext";
 import NavBar from "../Home/NavBar";
 import ApproveBlogs from "./ApproveBlogs";
 import MakeUserAdmin from "./MakeUserAdmin";
+import Footer from "../Footer/Footer";
 
 const AdminPage = () => {
     const { userName } = useAuth();
     const [activeButton, setActiveButton] = useState('blogApprovals');
 
     return (
-        <section className="bg-gray-100 min-h-screen">
+        <div className="flex flex-col min-h-screen">
             <NavBar />
-            <div className="container mx-auto py-8">
+            <div className="container mx-auto py-8 flex-grow">
                 <h1 className="text-3xl font-semibold text-gray-800 mb-6">Admin Page</h1>
                 <div className="space-y-4">
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -36,7 +37,8 @@ const AdminPage = () => {
                     {activeButton === 'blogApprovals' ? <ApproveBlogs /> : <MakeUserAdmin />}
                 </div>
             </div>
-        </section>
+            <Footer />
+        </div>
     );
 };
 
