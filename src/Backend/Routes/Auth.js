@@ -5,9 +5,41 @@ const bcrypt = require("bcrypt");
 const { getToken } = require("../Utils/Helpers");
 const passport = require("passport");
 
-router.post("/signup", async (req, res) => {
-    try{
+// Google OAuth login route
+router.get("/google",
+ passport.authenticate("google", { scope: ["profile", "email"] }));
 
+// Google OAuth callback route
+router.get("/google/callback",
+ passport.authenticate("google", { failureRedirect: "/login" }), async (req, res) => {
+  try {
+    // Extract user information from Google authentication
+    const { email, userName } = req.user;
+
+    // Check if the user already exists in your database
+    let user = await User.findOne({ email });
+
+    // If the user doesn't exist, create a new user without requiring a password
+    if (!user) {
+      user = new User({ email, userName });
+      await user.save();
+    }
+
+    const token = await getToken(email, user);
+
+    res.cookie("token", token);
+
+
+    res.redirect("http://localhost:3000/blog"); // Redirect to home page or send token in response
+  } catch (error) {
+    console.error("Error handling Google authentication:", error);
+    res.status(500).json({ error: "Error handling Google authentication" });
+  }
+});
+
+
+router.post("/signup", async (req, res) => {
+    try {
         const { userName, email, passWord } = req.body;
 
         const existingUser = await User.findOne({ email });
@@ -28,63 +60,64 @@ router.post("/signup", async (req, res) => {
 
         const token = await getToken(email, user);
 
-        return res.json({ message: "User created successfully", token});
+        return res.status(200).json({ message: "User created successfully", token });
 
-    } catch(error){
+    } catch(error) {
         console.error("Error signing up new account:", error);
-        return res.json({ Error: "Error signing up new account"})
+        return res.status(500).json({ error: "Error signing up new account" });
     }
 });
 
+
 router.post("/login", async (req, res) => {
-    try{
-
+    try {
+        const { email, passWord } = req.body;
         // check if email exists
-        const user = await User.findOne({email: req.body.email});
+        const user = await User.findOne({ email });
 
-        // if user exist
-        if(user){
-            const passwordChecker = await bcrypt.compare(
-                req.body.passWord,
-                user.passWord
-            );
+        // if user exists
+        if(user) {
+            const passwordChecker = await bcrypt.compare(passWord, user.passWord);
+            if(passwordChecker) {
+                // generate a Jwt token for authentication
+                const token = await getToken(email, user);
 
-            if(passwordChecker){
-                // generate a Jwt token for authentification
-                const token =await getToken(user.email, user)
-                return res.json({ message: "User logged in successfully", token});
-            } else{
-                return res.json({ message: "user password does not match"});
+                
+
+                // Send success response with token
+                return res.status(200).json({ success: true, token });
+            } else {
+                return res.status(401).json({ message: "User password does not match" });
             }
-        } else{
-            return res.json({ message: "Email not found"});
+        } else {
+            return res.status(404).json({ message: "Email not found" });
         }
-         
-    } catch(error){
+    } catch(error) {
         console.error("Error signing in to the account:", error);
-        return res.json({ Error: "Error signing in to the account" });
+        return res.status(500).json({ error: "Error signing in to the account" });
     }
 });
 
 router.get("/userId",
-passport.authenticate("jwt", {session: false}),
-async (req, res) => {
-    try{
+ passport.authenticate("jwt", { session: false }), async (req, res) => {
+    try {
         const userId = req.user._id;
 
         const user = await User.findById(userId);
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
-          }
+        }
 
-          const { _id, isAdmin, userName } = user;
+        const { _id, isAdmin, userName } = user;
 
-          return res.json({ data: { _id, isAdmin, userName } });
+        console.log("logged in user", user);
 
-    } catch(error){
+        return res.json({ data: { _id, isAdmin, userName } });
+
+    } catch(error) {
         console.error("Error fetching userId", error);
-        return res.json({ error: "Error fetching userId" });
+        return res.status(500).json({ error: "Error fetching userId" });
     }
 });
 

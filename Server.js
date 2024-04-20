@@ -6,6 +6,8 @@ const path = require("path");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const session = require("express-session");
 const User = require("./src/Backend/Model/User");
 const AuthRoutes = require("./src/Backend/Routes/Auth");
 const BlogRoutes = require("./src/Backend/Routes/Blog");
@@ -32,9 +34,30 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({
+  origin: 'http://localhost:3000', // Change to your frontend origin
+  credentials: true,
+}));
+
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+      httpOnly: true,
+      sameSite: 'None',
+      
+      // Add other cookie options as needed
+  },
+}));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 // Setup passport-jwt
 const opts = {};
@@ -55,6 +78,38 @@ passport.use(
     }
   })
 );
+
+
+// Google OAuth strategy
+passport.use(new GoogleStrategy({
+  clientID: "262034731960-bq3jm70tko223v5bs4gjbghd1bds5j94.apps.googleusercontent.com",
+  clientSecret: "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",
+  callbackURL: "http://localhost:8080/auth/google/callback"
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    let user = await User.findOne({  googleId: profile.id });
+
+    if (!user) {
+      // If user doesn't exist, create a new user based on the Google profile
+      user = new User({
+        userName: profile.displayName,
+        email: profile.emails[0].value,
+        googleId: profile.id,
+        // Add additional fields as needed
+      });
+      await user.save();
+    } else {
+      // Update user information if necessary
+      user.email = profile.emails[0].value;
+      // Update additional fields if needed
+      await user.save();
+    }
+
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+}));
 
 // Serialize and deserialize user for sessions
 passport.serializeUser((user, done) => {

@@ -30,10 +30,10 @@ const NavBar = () => {
     };
 
     const handleLogoutClick = () => {
-        const confirmed = window.confirm("Are you sure you want to log out?")
+        const confirmed = window.confirm("Are you sure you want to log out?");
         if(confirmed){
             handleLogout();
-            navigation("/")
+            navigation("/Blog");
 
         }
     };
@@ -41,14 +41,14 @@ const NavBar = () => {
     return (
         <section>
             <div className="mx-auto flex items-center justify-between mt-3">
-                <Link to="/">
+                <Link to="/Blog">
                     <img
                         src={logo}
                         alt="Logo"
                         className="w-32 h-10 ml-8"
                     />
                 </Link>
-                <div className="f">
+                <div className="">
                     <ul className="flex space-x-5 mr-16">
                         <li>
                             <Link to="/Blog">
@@ -72,26 +72,26 @@ const NavBar = () => {
                                         <FiUser className="text-xl" />
                                     </div>
                                     {showUserMenu && (
-                                        <ul className="absolute top-full left-0 bg-white border border-gray-200 rounded-md shadow-md py-2">
-                                            <li>
-                                                <Link to="/my_blogs" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                        <ul className="absolute top-full right-0 mt-2 flex flex-col bg-white border border-gray-200 rounded-md shadow-md px-5 py-2">
+                                            <li className="inline-block">
+                                                <Link to="/my_blogs" className=" px-4 py-2 text-gray-800 hover:bg-blue-100">
                                                     My Blogs
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link to="/blog/upload" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                                <Link to="/blog/upload" className="block px-4 py-2 text-gray-800 hover:bg-blue-100">
                                                    Upload Blogs
                                                 </Link>
                                             </li>
                                             {isAdmin && ( // Conditionally render "Admin" link
                                             <li>
-                                                 <Link to="/admin_page" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                                 <Link to="/admin_page" className="block px-4 py-2 text-gray-800 hover:bg-blue-100">
                                                     Admin
                                                  </Link>
                                              </li>
                                              )}
                                               <li>
-                                                <button onClick={handleLogoutClick} className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                                <button onClick={handleLogoutClick} className="block px-4 py-2 text-gray-800 hover:bg-blue-100">
                                                     Logout
                                                 </button>
                                             </li>

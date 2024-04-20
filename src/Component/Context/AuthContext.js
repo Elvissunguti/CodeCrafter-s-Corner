@@ -20,6 +20,10 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const token = Cookies.get("token");
+        
+
+        console.log("token:", token);
+
         if(token){
             setLoggedIn(true);
             fetchUserId();
@@ -33,6 +37,7 @@ export const AuthProvider = ({ children }) => {
             setCurrentUserId(response.data._id);
             setIsAdmin(response.data.isAdmin);
             setUserName(response.data.userName);
+            console.log(response.data.userName)
         } catch (error) {
             console.error("Error fetching user Id of current user:", error);
             
@@ -47,9 +52,15 @@ export const AuthProvider = ({ children }) => {
         setIsAdmin(false);
     };
 
+
+    const handleLogin = () => {
+        setLoggedIn(true);
+        fetchUserId();
+    };
+
     
     return(
-        <AuthContext.Provider value={{ loggedIn, currentUserId, isAdmin, userName, handleLogout }}>
+        <AuthContext.Provider value={{ loggedIn, currentUserId, isAdmin, userName, handleLogout, handleLogin }}>
             {children}
         </AuthContext.Provider>
     )

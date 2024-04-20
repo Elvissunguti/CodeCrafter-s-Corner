@@ -6,6 +6,9 @@ const User = new mongoose.Schema({
         required: true,
         unique: true
     },
+    googleId: {
+        type: String,
+    },
     email: {
         type: String,
         required: true,
@@ -13,7 +16,7 @@ const User = new mongoose.Schema({
     },
     passWord: {
         type: String,
-        required: true,
+        
     },
     isAdmin: {
         type: Boolean,

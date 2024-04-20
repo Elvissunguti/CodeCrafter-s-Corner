@@ -36,7 +36,7 @@ function App() {
             <Route path="/blog/upload" element={<UploadBlog  />} />
             <Route path="/my_blogs" element={<MyBlogs />} />
             <Route path="/about" element={<About />} />
-            <Route path="/resources" element={<Resources />} />
+            <Route path="/resources " element={<Resources />} />
             <Route path="/public_blogs" element={<PublicBlog />} />
             <Route path="/approved_blogs" element={<ApprovedBlog />} />
             <Route path="/pending_rejected_blogs" element={<PendingRejectedBlogs />} />
@@ -44,7 +44,6 @@ function App() {
             <Route path="/admin_page" element={<AdminPage />} />
             <Route path="/admin/approve_blogs" element={<ApproveBlogs />} />
             <Route path="/admin/make_user_admin" element={<MakeUserAdmin />} />
-
             </>
           ) : (
             <>
@@ -63,7 +62,7 @@ function App() {
 
 
 function NotFound() {
-  return <h1>Page not found. <Link className="text-red-600">Go to Homepage</Link></h1>;
+  return <h1 className='text-2xl'>Page not found. <Link to="/Blog" className="text-red-600">Go to Homepage</Link></h1>;
 }
 
 export default App;

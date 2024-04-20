@@ -3,6 +3,7 @@ import { makeUnauthenticatedPOSTRequest } from "../Utils/Helpers";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import codeCraftersLogo from "../../Assets/Logo/logo-transparent.png";
+import { useAuth } from "../Context/AuthContext";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ const SignUp = () => {
 
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
+
+  const { handleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -51,7 +54,8 @@ const SignUp = () => {
       if (response.message === "User created successfully") {
         const token = response.token;
         Cookies.set("token", token, { expires: 7 });
-        navigate("/");
+        handleLogin();
+        navigate("/Blog");
         console.log("User Signed up successfully");
       } else {
         console.log("Error creating a new user");
@@ -59,6 +63,12 @@ const SignUp = () => {
     } catch (error) {
       console.error("Error signing up new User:", error);
     }
+  };
+
+  // Function to handle Google sign up
+  const handleGoogleSignUp = () => {
+    // Redirect user to Google sign up route
+    window.location.href = "/auth/google";
   };
 
   return (
@@ -125,6 +135,14 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
+        
+        <button
+          onClick={handleGoogleSignUp}
+          className="bg-red-600 text-white px-4 py-2 rounded-md mt-4 w-full hover:bg-red-700 focus:outline-none focus:bg-red-700"
+        >
+          Sign Up with Google
+        </button>
+        
         <Link to="/login">
           <p className="mt-4">If you already have an account, <span className="text-red-500">Login</span></p>
         </Link>
