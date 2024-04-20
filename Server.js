@@ -15,6 +15,7 @@ const AdminRoutes = require("./src/Backend/Routes/Admin");
 const bodyParser = require("body-parser");
 const CommentRoutes = require("./src/Backend/Routes/Comments");
 const MyBlogsRoutes = require("./src/Backend/Routes/MyBlogs");
+require("dotenv").config();
 
 
 const app = express();
@@ -22,7 +23,7 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 8080;
 
 mongoose.connect(
-    "mongodb://CodeCrafter:CodeCrafter@ac-lunyvqa-shard-00-00.yqg0mk7.mongodb.net:27017,ac-lunyvqa-shard-00-01.yqg0mk7.mongodb.net:27017,ac-lunyvqa-shard-00-02.yqg0mk7.mongodb.net:27017/CodeCrafter?ssl=true&replicaSet=atlas-1gyjin-shard-0&authSource=admin&retryWrites=true&w=majority",
+    process.env.MONGODB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true }
 ).then(() => {
     console.log("Connected to MongoDB Atlas");
@@ -82,8 +83,8 @@ passport.use(
 
 // Google OAuth strategy
 passport.use(new GoogleStrategy({
-  clientID: "262034731960-bq3jm70tko223v5bs4gjbghd1bds5j94.apps.googleusercontent.com",
-  clientSecret: "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",
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: "http://localhost:8080/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
   try {
