@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const http = require("http");
 const cors = require("cors");
 const path = require("path");
 const passport = require("passport");
@@ -8,50 +7,50 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const session = require("express-session");
-const User = require("./src/Backend/Model/User");
-const AuthRoutes = require("./src/Backend/Routes/Auth");
-const BlogRoutes = require("./src/Backend/Routes/Blog");
-const AdminRoutes = require("./src/Backend/Routes/Admin");
+const User = require("../src/Backend/Model/User");
+const AuthRoutes = require("../src/Backend/Routes/Auth");
+const BlogRoutes = require("../src/Backend/Routes/Blog");
+const AdminRoutes = require("../src/Backend/Routes/Admin");
 const bodyParser = require("body-parser");
-const CommentRoutes = require("./src/Backend/Routes/Comments");
-const MyBlogsRoutes = require("./src/Backend/Routes/MyBlogs");
+const CommentRoutes = require("../src/Backend/Routes/Comments");
+const MyBlogsRoutes = require("../src/Backend/Routes/MyBlogs");
 require("dotenv").config();
+const functions = require("firebase-functions");
 
 
 const app = express();
-const server = http.createServer(app);
-const PORT = process.env.PORT || 8080;
+
 
 mongoose.connect(
     process.env.MONGODB_URI,
-    { useNewUrlParser: true, useUnifiedTopology: true }
+    {useNewUrlParser: true, useUnifiedTopology: true},
 ).then(() => {
-    console.log("Connected to MongoDB Atlas");
+  console.log("Connected to MongoDB Atlas");
 }).catch((err) => {
-    console.log("Error connecting to MongoDB Atlas", err);
+  console.log("Error connecting to MongoDB Atlas", err);
 });
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors({
-  origin: 'http://localhost:3000', // Change to your frontend origin
+  origin: "http://localhost:3000", // Change to your frontend origin
   credentials: true,
 }));
 
 
 app.use(session({
-  secret: 'your-secret-key',
+  secret: "your-secret-key",
   resave: false,
   saveUninitialized: false,
   cookie: {
-      httpOnly: true,
-      sameSite: 'None',
-      
-      // Add other cookie options as needed
+    httpOnly: true,
+    sameSite: "None",
+
+    // Add other cookie options as needed
   },
 }));
 
@@ -66,18 +65,18 @@ opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = "SECRETKEY";
 
 passport.use(
-  new JwtStrategy(opts, async function (jwt_payload, done) {
-    try {
-      const user = await User.findOne({ _id: jwt_payload.identifier });
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false);
+    new JwtStrategy(opts, (async (jwtPayload, done) => {
+      try {
+        const user = await User.findOne({_id: jwtPayload.identifier});
+        if (user) {
+          return done(null, user);
+        } else {
+          return done(null, false);
+        }
+      } catch (err) {
+        return done(err, false);
       }
-    } catch (err) {
-      return done(err, false);
-    }
-  })
+    })),
 );
 
 
@@ -85,10 +84,10 @@ passport.use(
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:8080/auth/google/callback"
+  callbackURL: "http://localhost:8080/auth/google/callback",
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-    let user = await User.findOne({  googleId: profile.id });
+    let user = await User.findOne({googleId: profile.id});
 
     if (!user) {
       // If user doesn't exist, create a new user based on the Google profile
@@ -130,6 +129,4 @@ app.use("/admin", AdminRoutes);
 app.use("/comment", CommentRoutes);
 app.use("/myblogs", MyBlogsRoutes);
 
-server.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
-  });
+exports.api = functions.https.onRequest(app);
