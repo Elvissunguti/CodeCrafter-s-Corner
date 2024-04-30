@@ -15,12 +15,14 @@ const BlogRoutes = require('./Routes/Blog');
 const AdminRoutes = require('./Routes/Admin');
 const CommentRoutes = require('./Routes/Comments');
 const MyBlogsRoutes = require('./Routes/MyBlogs');
-require('dotenv').config();
 
 const app = express();
 
+const { uri: MONGODB_URI } = functions.config().mongodb;
+const { client_id: GOOGLE_CLIENT_ID, client_secret: GOOGLE_CLIENT_SECRET } = functions.config().google;
+
 mongoose.connect(
-  process.env.MONGODB_URI,
+  MONGODB_URI,
   { useNewUrlParser: true, useUnifiedTopology: true },
 ).then(() => {
   console.log('Connected to MongoDB Atlas');
@@ -35,7 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
-  origin: 'http://localhost:3000', // Change to your frontend origin
+  origin: 'https://us-central1-codecrafter-s-corner.cloudfunctions.net/api', // Change to your frontend origin
   credentials: true,
 }));
 
@@ -75,8 +77,8 @@ passport.use(
 
 // Google OAuth strategy
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
   callbackURL: 'http://localhost:8080/auth/google/callback',
 }, async (accessToken, refreshToken, profile, done) => {
   try {

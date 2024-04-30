@@ -1,1 +1,1 @@
-export const backendUrl = "http://localhost:8080";
+export const backendUrl = "https://us-central1-codecrafter-s-corner.cloudfunctions.net/api";

@@ -7,8 +7,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "eslint .",
-    "build": "babel src -d Build"
+    "lint": "eslint ."
   },
   "engines": {
     "node": "18"
@@ -27,15 +26,12 @@
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-jwt": "^4.0.1"
+    "passport-jwt": "^4.0.1",
+    "path": "^0.12.7"
   },
   "devDependencies": {
-    "@eslint/js": "^9.1.1",
-    "babel-cli": "^6.26.0",
     "eslint": "^9.1.1",
-    "firebase-functions-test": "^3.1.0",
-    "globals": "^15.0.0",
-    "webpack": "^5.91.0"
+    "firebase-functions-test": "^3.1.0"
   },
   "private": true
 }
