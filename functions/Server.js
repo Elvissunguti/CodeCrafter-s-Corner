@@ -83,7 +83,7 @@ passport.use(
 passport.use(new GoogleStrategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:8080/auth/google/callback",
+  callbackURL: "https://us-central1-codecrafter-s-corner.cloudfunctions.net/api/auth/google/callback",
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await User.findOne({googleId: profile.id});
