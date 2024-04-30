@@ -56,7 +56,7 @@ const Login = () => {
 
   const handleGoogleLogin = () => {
     // Redirect to the Google login route
-    window.location.href = "http://localhost:8080/auth/google";
+    window.location.href = "https://us-central1-codecrafter-s-corner.cloudfunctions.net/api/auth/google";
   };
 
   return (

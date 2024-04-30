@@ -68,7 +68,7 @@ const SignUp = () => {
   // Function to handle Google sign up
   const handleGoogleSignUp = () => {
     // Redirect user to Google sign up route
-    window.location.href = "/auth/google";
+    window.location.href = "https://us-central1-codecrafter-s-corner.cloudfunctions.net/api/auth/google";
   };
 
   return (
