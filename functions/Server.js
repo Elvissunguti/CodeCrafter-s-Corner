@@ -1,28 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const functions = require("firebase-functions");
 const path = require("path");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
+const {ExtractJwt} = require("passport-jwt");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const session = require("express-session");
-const User = require("../src/Backend/Model/User");
-const AuthRoutes = require("../src/Backend/Routes/Auth");
-const BlogRoutes = require("../src/Backend/Routes/Blog");
-const AdminRoutes = require("../src/Backend/Routes/Admin");
 const bodyParser = require("body-parser");
-const CommentRoutes = require("../src/Backend/Routes/Comments");
-const MyBlogsRoutes = require("../src/Backend/Routes/MyBlogs");
-require("dotenv").config();
-const functions = require("firebase-functions");
-
+const User = require("./Backend/Model/User");
+const AuthRoutes = require("./Backend/Routes/Auth");
+const BlogRoutes = require("./Backend/Routes/Blog");
+const AdminRoutes = require("./Backend/Routes/Admin");
+const CommentRoutes = require("./Backend/Routes/Comments");
+const MyBlogsRoutes = require("./Backend/Routes/MyBlogs");
 
 const app = express();
 
+const {uri: MONGODB_URI} = functions.config().mongodb;
+const {
+  client_id: GOOGLE_CLIENT_ID,
+  client_secret: GOOGLE_CLIENT_SECRET,
+} = functions.config().google;
+
 
 mongoose.connect(
-    process.env.MONGODB_URI,
+    MONGODB_URI,
     {useNewUrlParser: true, useUnifiedTopology: true},
 ).then(() => {
   console.log("Connected to MongoDB Atlas");
@@ -37,13 +41,12 @@ app.use(express.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors({
-  origin: "http://localhost:3000", // Change to your frontend origin
+  origin: "https://us-central1-codecrafter-s-corner.cloudfunctions.net/api", // Change to your frontend origin
   credentials: true,
 }));
 
-
 app.use(session({
-  secret: "your-secret-key",
+  secret: "SECRETKEY",
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -54,10 +57,8 @@ app.use(session({
   },
 }));
 
-
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 // Setup passport-jwt
 const opts = {};
@@ -70,20 +71,18 @@ passport.use(
         const user = await User.findOne({_id: jwtPayload.identifier});
         if (user) {
           return done(null, user);
-        } else {
-          return done(null, false);
         }
+        return done(null, false);
       } catch (err) {
         return done(err, false);
       }
     })),
 );
 
-
 // Google OAuth strategy
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
   callbackURL: "http://localhost:8080/auth/google/callback",
 }, async (accessToken, refreshToken, profile, done) => {
   try {
@@ -121,7 +120,6 @@ passport.deserializeUser((id, done) => {
     done(err, user);
   });
 });
-
 
 app.use("/auth", AuthRoutes);
 app.use("/blog", BlogRoutes);
