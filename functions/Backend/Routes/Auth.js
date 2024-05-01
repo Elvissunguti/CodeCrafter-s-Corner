@@ -34,7 +34,7 @@ router.get(
 
         res.cookie("token", token);
 
-        res.redirect("http://localhost:3000/blog"); // Redirect to home page or send token in response
+        res.redirect("https://codecrafter-s-corner.web.app//Blog"); // Redirect to home page or send token in response
       } catch (error) {
         console.error("Error handling Google authentication:", error);
         res.status(500).json({error: "Error handling Google authentication"});
