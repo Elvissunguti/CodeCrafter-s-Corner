@@ -42,11 +42,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors({
   origin: [
-    "https://codecrafter-s-corner.web.app/",
-    "https://codecrafter-s-corner.firebaseapp.com/",
+    "https://codecrafter-s-corner.web.app",
+    "https://codecrafter-s-corner.firebaseapp.com",
   ],
-  credentials: true, // Make sure to include this if your frontend sends credentials
-}))
+  credentials: true,
+}));
+
 
 app.use(session({
   secret: "SECRETKEY",
