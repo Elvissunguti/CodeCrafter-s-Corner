@@ -41,9 +41,12 @@ app.use(express.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors({
-  origin: "https://us-central1-codecrafter-s-corner.cloudfunctions.net/api", // Change to your frontend origin
-  credentials: true,
-}));
+  origin: [
+    "https://codecrafter-s-corner.web.app/",
+    "https://codecrafter-s-corner.firebaseapp.com/",
+  ],
+  credentials: true, // Make sure to include this if your frontend sends credentials
+}))
 
 app.use(session({
   secret: "SECRETKEY",
