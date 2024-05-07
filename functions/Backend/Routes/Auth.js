@@ -6,6 +6,7 @@ const passport = require("passport");
 const {getToken} = require("../Utils/Helpers");
 const User = require("../Model/User");
 
+
 // Google OAuth login route
 router.get(
     "/google",
@@ -32,10 +33,9 @@ router.get(
 
         const token = await getToken(email, user);
 
-        res.cookie("token", token, { domain: "codecrafter-s-corner.firebaseapp.com", httpOnly: true });
-        res.cookie("token", token, { domain: "codecrafter-s-corner.web.app", httpOnly: true });
+        
 
-        res.redirect("https://codecrafter-s-corner.web.app/Blog"); // Redirect to home page or send token in response
+        res.redirect(`https://codecrafter-s-corner.web.app/Blog?token=${token}`); // Redirect to home page or send token in response
       } catch (error) {
         console.error("Error handling Google authentication:", error);
         res.status(500).json({error: "Error handling Google authentication"});

@@ -21,9 +21,6 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = Cookies.get("token");
         
-
-        console.log("token:", token);
-
         if(token){
             setLoggedIn(true);
             fetchUserId();

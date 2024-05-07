@@ -1,19 +1,39 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../Home/NavBar";
 import { makeUnauthenticatedGETRequest } from "../Utils/Helpers";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import Cookies from "js-cookie"; // Import Cookies library
 import Footer from "../Footer/Footer";
 
 const Blog = () => {
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const location = useLocation();
+
+    // Function to handle token extraction and processing
+    const handleTokenFromQuery = () => {
+        const query = new URLSearchParams(location.search);
+        const tokenFromQuery = query.get("token");
+        if (tokenFromQuery) {
+            // Log the token received
+            console.log("Token received:", tokenFromQuery);
+            // Handle token received
+            handleTokenReceived(tokenFromQuery);
+        }
+    };
+
+    // Function to handle token received
+    const handleTokenReceived = (token) => {
+        // Set token in cookies
+        Cookies.set("token", token, { expires: 7 }); // Set token with expiry of 7 days
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await makeUnauthenticatedGETRequest(
                     "/blog/publicblog"
-                    );
+                );
                 setBlogPosts(response.data);
                 setLoading(false);
             } catch (error) {
@@ -22,15 +42,19 @@ const Blog = () => {
             }
         };
         fetchData();
-    }, []);
 
-    // Function to truncate the content to a certain number of words
+        // Call handleTokenFromQuery whenever location changes
+        handleTokenFromQuery();
+    }, [location]);
+
+    // Call handleTokenFromQuery in the component render method
+    handleTokenFromQuery();
+
     const truncateContent = (content, maxLength) => {
         if (content.length <= maxLength) return content;
         return content.split(" ").slice(0, maxLength).join(" ") + "...";
     };
 
-    // Function to process image URLs
     const processImageUrl = (image) => {
         const imageFilename = image.split("/").pop();
         return `/Images/${imageFilename}`;
