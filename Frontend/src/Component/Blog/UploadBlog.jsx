@@ -84,14 +84,14 @@ const UploadBlog = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-gray-100">
             <NavBar />
             <section className="flex-grow">
                 <div className="max-w-4xl mx-auto px-4 py-8">
-                    <h2 className="text-3xl font-semibold mb-4">Create a new Blog</h2>
-                    <form onSubmit={handleSubmit} encType="multipart/form-data">
+                    <h2 className="text-3xl font-semibold mb-8 text-center">Create a New Blog</h2>
+                    <form onSubmit={handleSubmit} encType="multipart/form-data" className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Title:</label>
+                            <label className="block text-sm font-medium mb-2">Title:</label>
                             <input
                                 type="text"
                                 value={title}
@@ -101,7 +101,7 @@ const UploadBlog = () => {
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Thumbnail:</label>
+                            <label className="block text-sm font-medium mb-2">Thumbnail:</label>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -110,12 +110,12 @@ const UploadBlog = () => {
                                 required
                             />
                             {thumbnailPreview && (
-                                <img src={thumbnailPreview} alt="Thumbnail Preview" className="mt-2 w-32 h-32 object-cover rounded-md" />
+                                <img src={thumbnailPreview} alt="Thumbnail Preview" className="mt-2 w-full h-32 object-cover rounded-md" />
                             )}
                         </div>
                         {paragraphs.map((paragraph, index) => (
                             <div key={index} className="mb-4">
-                                <label className="block text-sm font-medium mb-1">{`Paragraph ${index + 1}:`}</label>
+                                <label className="block text-sm font-medium mb-2">{`Paragraph ${index + 1}:`}</label>
                                 <textarea
                                     value={paragraph.content}
                                     onChange={(e) => handleParagraphChange(index, e.target.value)}
@@ -132,9 +132,9 @@ const UploadBlog = () => {
                                 {paragraph.media && (
                                     <div className="mt-2">
                                         {paragraph.media.type.startsWith("image/") ? (
-                                            <img src={paragraph.mediaPreview} alt="Media Preview" className="w-32 h-32 object-cover rounded-md" />
+                                            <img src={paragraph.mediaPreview} alt="Media Preview" className="w-full h-32 object-cover rounded-md" />
                                         ) : (
-                                            <video src={paragraph.mediaPreview} controls className="w-32 h-32 object-cover rounded-md" />
+                                            <video src={paragraph.mediaPreview} controls className="w-full h-32 object-cover rounded-md" />
                                         )}
                                     </div>
                                 )}
@@ -143,20 +143,20 @@ const UploadBlog = () => {
                         ))}
                         <button type="button" onClick={addParagraph} className="mb-4 px-3 py-1 bg-green-500 text-white rounded-md">Add Paragraph</button>
                         {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
-                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md">Submit</button>
+                        <button type="submit" className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-md">Submit</button>
                     </form>
                     {showSuccessPopup && (
-                        <div className="popup">
-                            <div className="popup-inner">
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                            <div className="bg-white rounded-md p-6">
                                 {uploadProgress < 100 ? (
                                     <div>
-                                        <p>Uploading... {uploadProgress}%</p>
-                                        <progress value={uploadProgress} max="100" />
+                                        <p className="mb-4">Uploading... {uploadProgress}%</p>
+                                        <progress value={uploadProgress} max="100" className="w-full"></progress>
                                     </div>
                                 ) : (
                                     <div>
-                                        <p>Blog uploaded successfully!</p>
-                                        <button onClick={handleOkButtonClick} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md">OK</button>
+                                        <p className="mb-4">Blog uploaded successfully!</p>
+                                        <button onClick={handleOkButtonClick} className="px-4 py-2 bg-blue-500 text-white rounded-md">OK</button>
                                     </div>
                                 )}
                             </div>

@@ -25,6 +25,9 @@
     "react-icons": "^5.0.1",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
+    "react-typewriter-effect": "^1.1.0",
+    "react-typist": "^2.0.5",
+    "typeit": "^8.8.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

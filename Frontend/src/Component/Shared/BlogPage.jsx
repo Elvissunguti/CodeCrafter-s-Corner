@@ -3,6 +3,7 @@ import NavBar from "../Home/NavBar";
 import { makeAuthenticatedPOSTRequest, makeUnauthenticatedGETRequest } from "../Utils/Helpers";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import Footer from "../Footer/Footer";
 
 const BlogPage = () => {
     const { blogId } = useParams();
@@ -111,15 +112,19 @@ const BlogPage = () => {
         }
     };
 
+    if (error) return <div>{error}</div>;
+
     return (
         <section className="min-h-screen bg-gray-100">
             <NavBar />
             <div className="container mx-auto py-8 px-4">
-                {loading && <div className="text-center">Loading...</div>}
-                {error && <div className="text-center text-red-500">{error}</div>}
+            {loading && (
+                        <div className="flex justify-center items-center align-center  mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>
+            )}
 
                 {blog && (
                     <>
+                    <div className={`animate-fade-in ${loading ? 'hidden' : ''}`}>
                         <h1 className="text-3xl font-bold mb-4">{blog.title}</h1>
                         <p className="text-gray-600 mb-2">Author: {blog.userName}</p>
 
@@ -134,7 +139,7 @@ const BlogPage = () => {
                                 {paragraph.media.images && (
                                     <img
                                         src={`/Images/${paragraph.media.images}`}
-                                        alt="Image"
+                                        alt="media"
                                         className="my-4 rounded-lg shadow-lg"
                                     />
                                 )}
@@ -150,6 +155,7 @@ const BlogPage = () => {
                                 )}
                             </div>
                         ))}
+                        </div>
                         <div className="mt-8">
                             <h2 className="text-xl font-semibold mb-4">Comments</h2>
                             <form onSubmit={handleSubmitComment}>
@@ -183,6 +189,7 @@ const BlogPage = () => {
                     </>
                 )}
             </div>
+            <Footer />
         </section>
     )
 };
@@ -209,7 +216,7 @@ const CommentItem = ({ comment, loggedIn, currentUserId, handleEditComment, hand
     };
 
     return (
-        <div className="bg-gray-200 p-2 rounded-lg mb-2">
+        <div className="bg-gray-100 p-4 rounded-lg mb-4 shadow-md">
             {editMode ? (
                 <>
                     <textarea
@@ -233,7 +240,7 @@ const CommentItem = ({ comment, loggedIn, currentUserId, handleEditComment, hand
             ) : (
                 <>
                     <p>{comment.commentText}</p>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-600 text-sm">
                         Posted by {comment.userId.userName} on {new Date(comment.createdAt).toLocaleString()}
                     </p>
                     {loggedIn && currentUserId === comment.userId._id && (

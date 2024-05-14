@@ -8,6 +8,7 @@ import Footer from "../Footer/Footer";
 const Blog = () => {
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const location = useLocation();
 
     // Function to handle token extraction and processing
@@ -38,6 +39,7 @@ const Blog = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching blogs from the server:", error);
+                setError("Error fetching blogs. Please try again later.");
                 setLoading(false);
             }
         };
@@ -60,13 +62,19 @@ const Blog = () => {
         return `/Images/${imageFilename}`;
     };
 
+
+   
+    if (error) return <div>{error}</div>;
+
     return (
         <div className="min-h-screen flex flex-col">
             <NavBar />
             <section className="flex-grow">
+            {loading && (
+                        <div className="flex justify-center items-center align-center  mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>
+            )}
+            {!loading && blogPosts.length === 0 && <p>No blogs to display</p>}
                 <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {loading && <p>Loading...</p>}
-                    {!loading && blogPosts.length === 0 && <p>No blogs to display</p>}
                     {blogPosts.map((blog, index) => (
                         <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md">
                             {blog.thumbnail && (

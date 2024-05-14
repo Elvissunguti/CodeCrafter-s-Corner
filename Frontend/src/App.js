@@ -16,6 +16,7 @@ import AdminPage from './Component/Admin/AdminPage';
 import MakeUserAdmin from './Component/Admin/MakeUserAdmin';
 import About from './Component/About/About';
 import Resources from './Component/Resources/Resources';
+import Home from './Component/Home/Home';
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
 
         <Route path="/Blog" element={<Blog />} />
         <Route path="/blog/:blogId" element={<BlogPage   />} />
+        <Route path="/" element={<Home />} />
 
 
           {loggedIn ? (
