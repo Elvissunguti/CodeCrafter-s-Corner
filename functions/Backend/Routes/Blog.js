@@ -3,9 +3,8 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const Blog = require("../Model/Blog");
-const multerConfig = require("../Middleware/Blog");
+const {multerConfig, uploadFileToFirebase} = require("../Middleware/Blog");
 const User = require("../Model/User");
-
 
 const getMediaType = (filename) => {
   const extension = filename.split(".").pop().toLowerCase();
@@ -21,45 +20,52 @@ const getMediaType = (filename) => {
   }
 };
 
-
-// router to create a blog
-router.post("/create",
+router.post(
+    "/create",
     passport.authenticate("jwt", {session: false}),
-    multerConfig.fields([{name: "thumbnail", maxCount: 1}, {name: "media"}]),
+    multerConfig,
     async (req, res) => {
       try {
-        const {title} = req.body;
+        const {title, content} = req.body;
         const author = req.user._id;
-        const thumbnail = req.files["thumbnail"] ? req.files["thumbnail"][0].filename : null;
-        const mediaFiles = req.files["media"].map((file) => file.filename);
 
-        const paragraphs = req.body.content.map(JSON.parse);
+        const thumbnailFile = req.files["thumbnail"] ? req.files["thumbnail"][0] : null;
+        const mediaFiles = req.files["media"] || [];
+
+        const thumbnail = thumbnailFile ? await uploadFileToFirebase(thumbnailFile) : null;
+
+        const parsedContent = JSON.parse(content);
+
+        const paragraphs = await Promise.all(parsedContent.map(async (paragraph, index) => {
+          const file = mediaFiles[index];
+          const mediaType = file ? getMediaType(file.originalname) : null;
+          const mediaUrl = file ? await uploadFileToFirebase(file) : null;
+  
+          return {
+            content: paragraph.content,
+            media: {
+              images: mediaType === "image" ? mediaUrl : null,
+              videos: mediaType === "video" ? mediaUrl : null,
+            },
+          };
+        }));
 
         const newBlog = new Blog({
           title,
           thumbnail,
-          paragraph: paragraphs.map((paragraph, index) => {
-            const mediaType = getMediaType(req.files["media"][index] && req.files["media"][index].filename);
-
-            return {
-              content: paragraph.content,
-              media: {
-                images: mediaType === "image" ? mediaFiles[index] : null,
-                videos: mediaType === "video" ? mediaFiles[index] : null,
-              },
-            };
-          }),
+          paragraphs,
           author,
         });
 
         await newBlog.save();
 
-        return res.json({Message: "Blog created successfully"});
+        return res.json({message: "Blog created successfully"});
       } catch (error) {
         console.error("Error creating blog:", error);
         return res.status(500).json({error: "Error creating blog"});
       }
-    });
+    },
+);
 
 
 // router to fetch public blogs

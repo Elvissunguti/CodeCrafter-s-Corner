@@ -1,31 +1,49 @@
 const multer = require("multer");
-const path = require("path");
+const {v4: uuidv4} = require("uuid");
+const firebase = require("firebase-admin");
+const serviceAccount = require("../../serviceAccountKey.json");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const fileType = file.mimetype.split("/")[0];
-    let destinationPath = "";
-    if (fileType === "image") {
-      destinationPath = path.join(__dirname, "../../../public/Images");
-    } else if (fileType === "video") {
-      destinationPath = path.join(__dirname, "../../../public/Videos");
-    } else if (file.fieldname === "thumbnail") {
-      destinationPath = path.join(__dirname, "../../../public/Thumbnails");
-    }
-    cb(null, destinationPath);
-  },
-  filename: (req, file, cb) => {
-    const uniquePrefix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const extension = path.extname(file.originalname);
-    cb(null, uniquePrefix + extension);
-  },
+firebase.initializeApp({
+  credential: firebase.credential.cert(serviceAccount),
+  storageBucket: "codecrafter-s-corner.appspot.com",
 });
 
+const storage = firebase.storage();
+const bucket = storage.bucket();
+
+// Configure Multer to store files in memory
+const multerStorage = multer.memoryStorage();
+
 const multerConfig = multer({
-  storage,
+  storage: multerStorage,
   fileFilter: (req, file, cb) => {
     cb(null, true);
   },
-});
+}).fields([
+  {name: "thumbnail", maxCount: 1},
+  {name: "media", maxCount: 10},
+]);
 
-module.exports = multerConfig;
+// Helper function to upload file to Firebase Storage
+const uploadFileToFirebase = async (file) => {
+  const fileName = `${uuidv4()}-${file.originalname}`;
+  const fileRef = bucket.file(fileName);
+
+  await fileRef.save(file.buffer, {
+    metadata: {
+      contentType: file.mimetype,
+    },
+  });
+
+  const fileURL = await fileRef.getSignedUrl({
+    action: "read",
+    expires: "03-01-2500", // Long expiry date for testing purposes
+  });
+
+  return fileURL[0];
+};
+
+module.exports = {
+  multerConfig,
+  uploadFileToFirebase,
+};

@@ -26,7 +26,6 @@ export const makeAuthenticatedPOSTRequest = async (route, body) => {
     return formattedResponse;
 };
 
-// Updated makeAuthenticatedMulterPostRequest function with upload progress tracking
 export const makeAuthenticatedMulterPostRequest = async (route, formData, options = {}) => {
     try {
         const token = getToken();
@@ -40,23 +39,13 @@ export const makeAuthenticatedMulterPostRequest = async (route, formData, option
         });
 
         if (!response.ok) {
-            throw new Error(`Request failed with status: ${response.status}`);
-        }
-
-        const { onUploadProgress } = options;
-        if (onUploadProgress && typeof onUploadProgress === 'function') {
-            const contentLength = parseInt(response.headers.get('Content-Length'));
-            const reader = response.body.getReader();
-            let bytesUploaded = 0;
-
-            while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) break;
-
-                bytesUploaded += value.length;
-                const progress = Math.round((bytesUploaded / contentLength) * 100);
-                onUploadProgress(progress);
+            // Handle specific HTTP error codes
+            if (response.status === 401) {
+                throw new Error("Unauthorized: Please login again.");
+            } else if (response.status === 500) {
+                throw new Error("Internal server error: Please try again later.");
+            } else {
+                throw new Error("Request failed. Please try again later.");
             }
         }
 
@@ -64,15 +53,15 @@ export const makeAuthenticatedMulterPostRequest = async (route, formData, option
         return formattedResponse;
     } catch (error) {
         console.error("Request error:", error);
-        if (error instanceof TypeError) {
-            console.log("Response does not contain a body to extract");
+        // Return specific error message based on the error type
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+            return { error: "Network error: Please check your internet connection." };
         } else {
-            const responseText = await error.text(); // Capture the error response text
-            console.log("Response text:", responseText); // Log the error response
+            return { error: "Request failed. Please try again later." };
         }
-        return { error: "Request failed" };
     }
 };
+
 
 
 export const makeUnauthenticatedGETRequest = async (route) => {

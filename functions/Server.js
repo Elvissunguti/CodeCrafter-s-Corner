@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const functions = require("firebase-functions");
-const path = require("path");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const {ExtractJwt} = require("passport-jwt");
@@ -35,12 +34,6 @@ mongoose.connect(
   console.log("Error connecting to MongoDB Atlas", err);
 });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({extended: true}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors({
   origin: [
     "https://codecrafter-s-corner.web.app",
@@ -48,7 +41,10 @@ app.use(cors({
   ],
   credentials: true,
 }));
-
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(session({
   secret: "SECRETKEY",
@@ -131,5 +127,10 @@ app.use("/blog", BlogRoutes);
 app.use("/admin", AdminRoutes);
 app.use("/comment", CommentRoutes);
 app.use("/myblogs", MyBlogsRoutes);
+
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({error: "Internal server error"});
+});
 
 exports.api = functions.https.onRequest(app);

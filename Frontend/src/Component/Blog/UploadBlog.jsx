@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import NavBar from "../Home/NavBar";
+import ProgressBar from 'react-progressbar';
 import { makeAuthenticatedMulterPostRequest } from "../Utils/Helpers";
 import Footer from "../Footer/Footer";
 
@@ -9,7 +10,7 @@ const UploadBlog = () => {
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const [paragraphs, setParagraphs] = useState([{ content: "", media: null, mediaPreview: null }]);
     const [uploadProgress, setUploadProgress] = useState(0);
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+   
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,21 +26,14 @@ const UploadBlog = () => {
                 }
             });
 
-            const response = await makeAuthenticatedMulterPostRequest('/blog/create', formData, {
-                onUploadProgress: (progress) => {
+            const response = await makeAuthenticatedMulterPostRequest('/blog/create', formData,{
+                onUploadProgress: progressEvent => {
+                    const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
                     setUploadProgress(progress);
-                    if (progress === 100) {
-                        setShowSuccessPopup(true);
-                    }
                 }
             });
 
-            if (response.error) {
-                console.error("Error creating blog:", response.error);
-            } else {
-                setShowSuccessPopup(true);
-                setUploadProgress(0);
-            }
+         
 
         } catch (error) {
             console.error("Error creating blog:", error);
@@ -78,10 +72,7 @@ const UploadBlog = () => {
         });
     };
 
-    const handleOkButtonClick = () => {
-        setShowSuccessPopup(false);
-        window.location.reload();
-    };
+    
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
@@ -142,26 +133,10 @@ const UploadBlog = () => {
                             </div>
                         ))}
                         <button type="button" onClick={addParagraph} className="mb-4 px-3 py-1 bg-green-500 text-white rounded-md">Add Paragraph</button>
-                        {uploadProgress > 0 && <p>Upload Progress: {uploadProgress}%</p>}
+                        <ProgressBar completed={uploadProgress} />
                         <button type="submit" className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-md">Submit</button>
                     </form>
-                    {showSuccessPopup && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                            <div className="bg-white rounded-md p-6">
-                                {uploadProgress < 100 ? (
-                                    <div>
-                                        <p className="mb-4">Uploading... {uploadProgress}%</p>
-                                        <progress value={uploadProgress} max="100" className="w-full"></progress>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <p className="mb-4">Blog uploaded successfully!</p>
-                                        <button onClick={handleOkButtonClick} className="px-4 py-2 bg-blue-500 text-white rounded-md">OK</button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                    
                 </div>
             </section>
             <Footer />

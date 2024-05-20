@@ -31,6 +31,8 @@ function App() {
         <Route path="/Blog" element={<Blog />} />
         <Route path="/blog/:blogId" element={<BlogPage   />} />
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/resources" element={<Resources />} />
 
 
           {loggedIn ? (
@@ -38,7 +40,7 @@ function App() {
             <Route path="/blog/upload" element={<UploadBlog  />} />
             <Route path="/my_blogs" element={<MyBlogs />} />
             <Route path="/about" element={<About />} />
-            <Route path="/resources " element={<Resources />} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/public_blogs" element={<PublicBlog />} />
             <Route path="/approved_blogs" element={<ApprovedBlog />} />
             <Route path="/pending_rejected_blogs" element={<PendingRejectedBlogs />} />
